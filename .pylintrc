@@ -1,0 +1,26 @@
+[MESSAGES CONTROL]
+disable=global-statement,
+        line-too-long,
+        missing-docstring,
+        protected-access,
+        unused-wildcard-import
+
+
+[BASIC]
+good-names=f,
+           i,
+           j,
+           k,
+           ex,
+           _
+
+[IMPORTS]
+# Allow wildcard imports from modules that define __all__.
+allow-wildcard-with-all=yes
+
+[SIMILARITIES]
+min-similarity-lines=10000
+
+[DESIGN]
+max-attributes=20
+min-public-methods=0

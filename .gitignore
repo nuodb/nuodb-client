@@ -1,0 +1,14 @@
+*~
+\#*\#
+
+*.out
+*.swp
+*.swo
+*.BAK
+*.orig
+*.pyc
+*.pyo
+
+/obj/
+/downloads/
+/package/

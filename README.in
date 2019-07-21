@@ -1,0 +1,33 @@
+NuoDB Client Package
+====================
+
+Version: ${VERSION}
+
+This package provides a collection of publicly-available clients for the
+NuoDB database.  Details of each package provided including its version,
+contents, and usage can be found below.
+
+For more information on NuoDB see: https://www.nuodb.com
+For NuoDB documentation see: https://doc.nuodb.com/
+
+
+MANIFEST
+========
+
+${MANIFEST}
+
+
+PACKAGES
+========
+
+${PACKAGES}
+
+
+LICENSE
+=======
+
+The individual client licenses can be found in the doc/<client> directories.
+Unless otherwise specified there, the contents of this package are licensed
+under the 3-clause BSD license:
+
+${LICENSE}
