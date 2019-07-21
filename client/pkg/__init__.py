@@ -1,1 +1,1 @@
-__all__ = ['nuodb', 'jdbc', 'migrator']
+__all__ = ['nuodb', 'jdbc', 'migrator', 'hibernate']
