@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# (C) Copyright NuoDB, Inc. 2011-2013  All Rights Reserved
+
+# Unfortunately, ksh93 defines builtin aliases even when run non-interactively.
+unalias -a
+
+die () { echo "$*"; exit 1; }
+
+# Find the installation directory.
+CMD=${0##*/}
+DIR=$(cd "${0%$CMD}." && pwd)
+
+# Find the run-java-app script
+_home=
+[ -n "$NUOCLIENT_HOME" ] && [ -f "$NUOCLIENT_HOME"/etc/run-java-app.sh ] \
+    && _home="$NUOCLIENT_HOME"
+[ -z "$_home" ] && [ -f "${DIR%/*}"/etc/run-java-app.sh ] \
+    && _home="${DIR%/*}"
+[ -n "$_home" ] || die "Cannot locate NuoDB client installation"
+
+export NUODB_OPTSVAR=NUODB_MANAGER_JAVA_OPTS
+
+exec "$_home"/etc/run-java-app.sh jar/nuodbmanager.jar "NuoDB Manager" -- "$@"
