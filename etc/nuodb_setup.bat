@@ -10,10 +10,10 @@ set "NUOCLIENT_HOME=%CD%"
 popd
 :_run
 
-set "NUODB_CFGDIR=%NUODB_HOME%\var\etc"
-set "NUODB_VARDIR=%NUODB_HOME%\var\opt"
-set "NUODB_LOGDIR=%NUODB_HOME%\var\log"
-set "NUODB_RUNDIR=%NUODB_HOME%\var\run"
+set "NUODB_CFGDIR=%NUOCLIENT_HOME%\var\etc"
+set "NUODB_VARDIR=%NUOCLIENT_HOME%\var\opt"
+set "NUODB_LOGDIR=%NUOCLIENT_HOME%\var\log"
+set "NUODB_RUNDIR=%NUOCLIENT_HOME%\var\run"
 set "NUODB_CRASHDIR=%NUODB_LOGDIR%\crash"
 if not exist "%NUODB_CFGDIR%" mkdir "%NUODB_CFGDIR%"
 if not exist "%NUODB_VARDIR%" mkdir "%NUODB_VARDIR%"
