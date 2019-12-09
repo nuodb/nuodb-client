@@ -6,6 +6,7 @@ Command-line tool for building the NuoDB client package.
 """
 
 import os
+import sys
 import argparse
 
 from string import Template
