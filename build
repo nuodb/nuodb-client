@@ -28,6 +28,8 @@ os.environ['LANG'] = 'C'
 # Turn off file extension saving for tar (in MacOS)
 os.environ['COPYFILE_DISABLE'] = 'true'
 
+USER = 'nuodb'
+GROUP = 'nuodb'
 
 def build_clients(packages):
     version = datetime.now().strftime("%Y%m%d")
@@ -90,7 +92,7 @@ def create_package(pkgname):
         out = '{}.tar.gz'.format(pkgname)
         rmfile(out)
         info("Creating {} ...".format(out))
-        run(['tar', 'czf', out, pkgname], cwd=Globals.finalroot)
+        run(['tar', '-c', '-z', '-f', out, '--owner=%s' % USER, '--group=%s' % GROUP, pkgname], cwd=Globals.finalroot)
     else:
         out = '{}.zip'.format(pkgname)
         rmfile(out)
