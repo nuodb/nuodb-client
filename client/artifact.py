@@ -71,13 +71,23 @@ class PyPIMetadata(object):
 
     __METAURL = 'https://pypi.org/pypi/{}/json'
 
-    def __init__(self, repo):
+    def __init__(self, repo, extension='.tar.gz'):
         super(PyPIMetadata, self).__init__()
         url = self.__METAURL.format(repo)
         self.metadata = json.loads(_getremotedata(url))
         self.version = self.metadata['info']['version']
-        self.pkgurl = self.metadata['urls'][0]['url']
-        self.pkgchksum = self.metadata['urls'][0]['digests']['sha256']
+        if extension is None:
+            # User doesn't care so choose the first one
+            pkg = self.metadata['urls'][0]
+        else:
+            # Find the one the user asked for
+            for pkg in self.metadata['urls']:
+                if pkg['filename'].endswith(extension):
+                    break
+            else:
+                raise DownloadError("No package ending in {} found at {}".format(extension, url))
+        self.pkgurl = pkg['url']
+        self.pkgchksum = pkg['digests']['sha256']
 
 
 class MavenMetadata(object):
