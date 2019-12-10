@@ -28,4 +28,7 @@ _home=
     && _home="${DIR%/*}"
 [ -n "$_home" ] || die "Cannot locate pynuoadmin installation"
 
-exec "$_python" "$_home"/python/pynuoadmin/nuodb_cli.py "$@"
+# Allow location of argcomplete
+export PYTHONPATH="$_home/python/pynuoadmin:${PYTHONPATH:+$PYTHONPATH:}$_home/python/argcomplete"
+
+exec "$_python" -m nuodb_cli "$@"
