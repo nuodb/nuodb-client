@@ -24,6 +24,6 @@ export NUODB_OPTSVAR=NUODB_MANAGER_JAVA_OPTS
 # Force the configuration to be exported to the app
 export NUODB_CFGDIR=
 
-umask 0700
+umask 0077
 
 exec "$_home"/etc/run-java-app.sh jar/nuokeymanager.jar "NuoDB Key Manager" -- "$@"
