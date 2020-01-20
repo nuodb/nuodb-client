@@ -18,19 +18,19 @@ Requirements
 Each client will have different requirements.  System requirements for running
 the NuoDB database can be found on the `System Requirements`_ page.
 
-+------------------+---------------------+
-|Utility           | Requirements        |
-+==================+=====================+
-|nuosql            |GNU/Linux or Windows |
-+------------------+---------------------+
-|nuoloader         |GNU/Linux or Windows |
-+------------------+---------------------+
-|nuodb-migrator    |Java 8 or 11         |
-+------------------+---------------------+
-|nuocmd            |Python 2             |
-+------------------+---------------------+
-|nuodbmgr          |Java 8 or 11         |
-+------------------+---------------------+
++------------------+-----------------------------------+
+|Utility           | Requirements                      |
++==================+===================================+
+|nuosql            |GNU/Linux or Windows               |
++------------------+-----------------------------------+
+|nuoloader         |GNU/Linux or Windows               |
++------------------+-----------------------------------+
+|nuodb-migrator    |Java 8 or 11                       |
++------------------+-----------------------------------+
+|nuocmd            |Python 2 with `requests` installed |
++------------------+-----------------------------------+
+|nuodbmgr          |Java 8 or 11                       |
++------------------+-----------------------------------+
 
 Also included are SQL drivers:
 
