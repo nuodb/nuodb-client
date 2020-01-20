@@ -7,7 +7,7 @@ NuoDB Client Package
 This project bundles the latest publicly-available versions of NuoDB_
 database clients into a single downloadable file.  The official versions of
 the NuoDB Client Package file are available both from `GitHub Releases`_ as
-well as from the `NuoDB Customer Portal`_.
+well as from the `NuoDB Client Portal`_.
 
 You can use this project to create a package containing customized sets NuoDB
 Client packages, of course!
@@ -27,7 +27,7 @@ the NuoDB database can be found on the `System Requirements`_ page.
 +------------------+-----------------------------------+
 |nuodb-migrator    |Java 8 or 11                       |
 +------------------+-----------------------------------+
-|nuocmd            |Python 2 with `requests` installed |
+|nuocmd            |Python 2 with *requests* installed |
 +------------------+-----------------------------------+
 |nuodbmgr          |Java 8 or 11                       |
 +------------------+-----------------------------------+
