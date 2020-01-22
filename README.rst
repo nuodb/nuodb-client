@@ -67,7 +67,7 @@ NuoDB online Documentation_
 License
 -------
 
-NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuodb/nuodb-client/blob/master/LICENSE>`_.
+NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuodb/nuodb-client/blob/master/LICENSE>`_
 
 .. _NuoDB: https://www.nuodb.com/
 .. _GitHub Releases: https://github.com/nuodb/nuodb-client/releases
