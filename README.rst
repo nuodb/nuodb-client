@@ -14,7 +14,7 @@ Client packages.
 Requirements
 ------------
 
-Each client application connecting to NuoDB database will have different requirements. System requirements for running
+Each client application connection to NuoDB database will have different requirements. System requirements for running
 the NuoDB database can be found on the NuoDB online documentation `System Requirements`_ page.
 
 +------------------+-----------------------------------+
