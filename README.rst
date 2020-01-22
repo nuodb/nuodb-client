@@ -65,7 +65,7 @@ paths.
 Resources
 ---------
 
-`NuoDB Documentation`
+`NuoDB Documentation`_
 
 License
 -------
