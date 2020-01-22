@@ -56,11 +56,10 @@ have NuoDB_ available yet, you can use the `NuoDB Community Edition`_.
 Installation
 ------------
 
-Unpack the tar file, or unzip the zip file.  No other installation is
-required.
+Unpack the tar file, or unzip the zip file into your chosen NuoDB Client package installation directory.
 
 To use the drivers you may need to configure applications with the appropriate
-paths.
+path settings to locate your NuoDB Client package install directory.
 
 Resources
 ---------
