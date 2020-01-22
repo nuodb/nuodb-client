@@ -72,6 +72,6 @@ NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuo
 .. _NuoDB: https://www.nuodb.com/
 .. _GitHub Releases: https://github.com/nuodb/nuodb-client/releases
 .. _Community Edition: https://www.nuodb.com/dev-center/community-edition-download
-.. _System Requirements: https://doc.nuodb.com/Latest/Content/System-Requirements.htm
+.. _System Requirements: https://doc.nuodb.com/Default/Latest/Content/System-Requirements.htm
 .. _Documentation: https://doc.nuodb.com/Latest/Default.htm
 .. _NuoDB Documenation: https://doc.nuodb.com/Latest/Default.htm
