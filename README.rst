@@ -5,7 +5,7 @@ NuoDB Client Package
 .. contents::
 
 The NuoDB Client drivers are used to connect Client applications to a NuoDB database. The NuoDB Client Package bundles the latest publicly-available NuoDB_ database client driver verions into a single downloadable file. The official versions of
-the NuoDB Client Package file are available from both locations, `GitHub Releases`_ and from the `NuoDB Community Edition`_ webpage.
+the NuoDB Client Package file are available from the NuoDB `GitHub Releases`_ page and from the NuoDB `NuoDB Community Edition`_ webpage.
 
 You can use this project to create a package containing customized sets of NuoDB
 Client packages.
@@ -71,7 +71,7 @@ NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuo
 
 .. _NuoDB: https://www.nuodb.com/
 .. _GitHub Releases: https://github.com/nuodb/nuodb-client/releases
-.. _NuoDB Community Edition: https://www.nuodb.com/dev-center/community-edition-download
+.. _Community Edition: https://www.nuodb.com/dev-center/community-edition-download
 .. _System Requirements: https://doc.nuodb.com/Latest/Content/System-Requirements.htm
 .. _Documentation: https://doc.nuodb.com/Latest/Default.htm
 .. _NuoDB Documenation: https://doc.nuodb.com/Latest/Default.htm
