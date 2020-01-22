@@ -49,7 +49,7 @@ Also included are SQL drivers:
 +------------------+---------------------+
 
 The use of the client drivers require a running NuoDB database.  If you don't
-have a NuoDB_ database running in your environment yet, you can use the `NuoDB Community Edition`_ page to guide you through the steps to deploy a NuoDB database.
+have a NuoDB_ database running in your environment yet, you can use the NuoDB `Community Edition`_ page to guide you through the steps to deploy a NuoDB database.
 
 Installation
 ------------
