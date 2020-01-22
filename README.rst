@@ -65,7 +65,7 @@ paths.
 Resources
 ---------
 
-NuoDB NuoDBDocumentation_
+NuoDB online NuoDBDocumentation_
 
 License
 -------
