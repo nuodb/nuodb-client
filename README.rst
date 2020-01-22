@@ -13,7 +13,7 @@ Client packages.
 Requirements
 ------------
 
-Each client application connecting to NuoDB will have different requirements.  System requirements for running
+Each client application connecting to NuoDB database will have different requirements. System requirements for running
 the NuoDB database can be found on the NuoDB online documentation `System Requirements`_ page.
 
 +------------------+-----------------------------------+
@@ -49,7 +49,7 @@ Also included are SQL drivers:
 +------------------+---------------------+
 
 The use of the client drivers require a running NuoDB database.  If you don't
-have NuoDB_ available yet, you can use the `NuoDB Community Edition`_.
+have a NuoDB_ database running in your environment yet, you can use the `NuoDB Community Edition`_ page to guide you through the steps to deploy a NuoDB database.
 
 Installation
 ------------
@@ -74,4 +74,3 @@ NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuo
 .. _Community Edition: https://www.nuodb.com/dev-center/community-edition-download
 .. _System Requirements: http://doc.nuodb.com/Latest/Default.htm#System-Requirements.htm
 .. _Documentation: https://doc.nuodb.com/Latest/Default.htm
-.. _NuoDB Documenation: https://doc.nuodb.com/Latest/Default.htm
