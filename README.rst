@@ -56,8 +56,8 @@ Installation
 
 Unpack the tar file, or unzip the zip file into your chosen NuoDB Client package installation directory.
 
-To use the drivers you may need to configure applications with the appropriate
-path settings to locate your NuoDB Client package install directory.
+To use the drivers you may need to configure your client applications with the appropriate
+path settings to locate your NuoDB Client package install directory at runtime.
 
 Resources
 ---------
