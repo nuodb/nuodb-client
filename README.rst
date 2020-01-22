@@ -49,7 +49,7 @@ Also included are SQL drivers:
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
 
-The use of the client drivers require a running NuoDB database.  If you don't
+The use of the clients require a running NuoDB database.  If you don't
 have a NuoDB_ database running in your environment yet, you can use the NuoDB `Community Edition`_ page to guide you through
 the steps to deploy a NuoDB database.
 
