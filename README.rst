@@ -4,19 +4,18 @@ NuoDB Client Package
 
 .. contents::
 
-This project bundles the latest publicly-available versions of NuoDB_
-database clients into a single downloadable file.  The official versions of
-the NuoDB Client Package file are available both from `GitHub Releases`_ as
-well as from the `NuoDB Client Portal`_.
+The NuoDB Client Package bundles the latest publicly-available NuoDB_ database client verions into a single downloadable
+file. The official versions of the NuoDB Client Package file are available from the NuoDB `GitHub Releases`_ page and from the
+NuoDB `Community Edition`_ webpage.
 
-You can use this project to create a package containing customized sets NuoDB
-Client packages, of course!
+You can use this project to create a package containing customized sets of NuoDB
+Client packages.
 
 Requirements
 ------------
 
-Each client will have different requirements.  System requirements for running
-the NuoDB database can be found on the `System Requirements`_ page.
+Each client in the NuoDB Client Package will have different requirements when connecting to a NuoDB database. System requirements
+for running the NuoDB database can be found on the NuoDB documentation `System Requirements`_ page.
 
 +------------------+-----------------------------------+
 |Utility           | Requirements                      |
@@ -50,31 +49,30 @@ Also included are SQL drivers:
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
 
-Of course, these clients require a NuoDB database to be running.  If you don't
-have NuoDB_ available yet, you can use the `NuoDB Community Edition`_.
+The use of the clients require a running NuoDB database.  If you don't have a NuoDB_ database running in your environment yet,
+you can use the NuoDB `Community Edition`_ page to guide you through the steps to deploy a NuoDB database.
 
 Installation
 ------------
 
-Unpack the tar file, or unzip the zip file.  No other installation is
-required.
+Unpack the tar file, or unzip the zip file which will create a *nuodb-client-<ver>* directory that contains the NuoDB Client
+Package files.
 
-To use the drivers you may need to configure applications with the appropriate
-paths.
+To use the drivers you may need to configure your user applications with the appropriate path settings to locate your 
+NuoDB Client package install directory at runtime.
 
 Resources
 ---------
 
-NuoDB Documentation: https://doc.nuodb.com/Latest/Default.htm
+NuoDB Documentation_
 
 License
 -------
 
-NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuodb/nuodb-client/blob/master/LICENSE>`_.
+NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuodb/nuodb-client/blob/master/LICENSE>`_
 
 .. _NuoDB: https://www.nuodb.com/
 .. _GitHub Releases: https://github.com/nuodb/nuodb-client/releases
-.. _NuoDB Community Edition: https://www.nuodb.com/dev-center/community-edition-download
-.. _NuoDB Client Portal: https://www.nuodb.com/dev-center/community-edition-download
-.. _System Requirements: https://doc.nuodb.com/Latest/Content/System-Requirements.htm
+.. _Community Edition: https://www.nuodb.com/dev-center/community-edition-download
+.. _System Requirements: https://doc.nuodb.com/Latest/Default.htm#System-Requirements.htm
 .. _Documentation: https://doc.nuodb.com/Latest/Default.htm
