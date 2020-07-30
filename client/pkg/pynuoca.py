@@ -2,6 +2,8 @@
 #
 # Add the pynuoca module
 
+import os
+
 from client.package import Package
 from client.stage import Stage
 from client.artifact import GitHubMetadata, Artifact
@@ -37,12 +39,21 @@ class NuoCAPackage(Package):
         mkdir(self.pkgroot)
         unpack_file(self._zip.path, self.pkgroot)
 
-    def install(self):
-        self.stage.stage('jar', ['jar/'])
-        self.stage.stage('conf', ['conf/'])
-        ext = '' if Globals.target == 'lin64' else '.bat'
-        self.stage.stagefiles('bin', 'bin', ['nuodb-migrator'+ext])
+        for file_name in os.listdir(self.pkgroot):
+            self.stage.basedir = os.path.join(self.pkgroot, file_name)
 
+    def install(self):
+        if Globals.target != 'lin64':
+            info('{}: Skipping on {} platform'.format(self.name, Globals.target))
+            return
+
+        self.stage.stage(self.__PKGNAME, ['src/'])
+
+        self.stage.stage('etc', ['etc/'])
+        self.stage.stage('lib', ['lib/'])
+        self.stage.stage('plugins', ['plugins/'])
+
+        self.stage.stage('bin', ['bin/'])
 
 # Create and register this package
 NuoCAPackage()
