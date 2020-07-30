@@ -62,7 +62,11 @@ class GitHubMetadata(object):
         url = self.__METAURL.format(account, repo)
         self.metadata = json.loads(_getremotedata(url))
         self.version = self.metadata['name']
-        self.pkgurl = self.metadata['assets'][0]['browser_download_url']
+
+        if self.metadata['assets']:
+            self.pkgurl = self.metadata['assets'][0]['browser_download_url']
+        else:
+            self.pkgurl = self.metadata['zipball_url']
 
 
 class PyPIMetadata(object):
