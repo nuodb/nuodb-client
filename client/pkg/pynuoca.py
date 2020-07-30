@@ -1,28 +1,28 @@
 # (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
 #
-# Add the nuodb-migrator client
+# Add the pynuoca module
 
 from client.package import Package
 from client.stage import Stage
 from client.artifact import GitHubMetadata, Artifact
 from client.utils import *
 
-class MigratorPackage(Package):
-    """Add the NuoDB migrator client."""
+class NuoCAPackage(Package):
+    """Add the NuoDB Collection Agent."""
 
-    __PKGNAME = 'migrator'
+    __PKGNAME = 'pynuoca'
 
     __USER = 'nuodb'
-    __REPO = 'migration-tools'
-    __ZIP = 'nuodb-migrator.zip'
+    __REPO = 'nuoca'
+    __ZIP = 'pynuoca.zip'
 
     def __init__(self):
-        super(MigratorPackage, self).__init__(self.__PKGNAME)
+        super(NuoCAPackage, self).__init__(self.__PKGNAME)
         self._zip = None
 
         self.staged = [Stage(self.__PKGNAME,
-                             title='NuoDB Migrator',
-                             requirements='Java 8 or 11')]
+                             title='NuoDB Collection Agent',
+                             requirements='Python 2')]
         self.stage = self.staged[0]
 
     def download(self):
@@ -45,4 +45,4 @@ class MigratorPackage(Package):
 
 
 # Create and register this package
-MigratorPackage()
+NuoCAPackage()
