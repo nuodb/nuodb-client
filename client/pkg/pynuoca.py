@@ -47,51 +47,16 @@ class PyNuoCA(Package):
         self.stage = self.staged[0]
 
     def download(self):
-        # Find the latest release
-        pypi = PyPIMetadata(self.__PKGNAME)
-
-        self.setversion(pypi.version)
-
-        self._file = Artifact(self.name, 'pynuoca.tar.gz',
-                              pypi.pkgurl, chksum=pypi.pkgchksum)
-        self._file.update()
-
-        for dependency_key, dependency_object in self.dependencies.items():
-            info('{}: Downloading dependency {}'.format(self.name, dependency_key))
-
-            dep = PyPIMetadata(dependency_key)
-
-            dependency_object._version = dep.version
-            dependency_object._file = Artifact(dependency_key,
-                                 '{}-{}.tar.gz'.format(dependency_key, dependency_object._version),
-                                 dep.pkgurl,
-                                 chksum=dep.pkgchksum)
-
-            dependency_object._file.update()
+        pass
 
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        unpack_file(self._file.path, self.pkgroot)
-        self.stage.basedir = os.path.join(self.pkgroot, 'pynuoca-{}'.format(self.stage.version))
 
-        for dependency_key, dependency_object in self.dependencies.items():
-            info('{}: Unpacking dependency {}'.format(self.name, dependency_key))
-            unpack_file(dependency_object._file.path, self.pkgroot)
-            dependency_object._basedir = os.path.join(self.pkgroot, '{}-{}'.format(dependency_key, dependency_object._version))
+        run(['pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
 
     def install(self):
-        self.stage.stage('python', ['pynuoca'])
-        self.stage.stage('lib', ['lib/'])
-        self.stage.stage('doc', ['README.rst', 'LICENSE'])
-        self.stage.stage('bin', ['bin/'])
-        self.stage.stage('etc', ['etc/'])
-
-        for dependency_key, dependency_object in self.dependencies.items():
-            info('{}: Installing dependency {}'.format(self.name, dependency_key))
-            depdir = os.path.join('python', dependency_key)
-            self.stage.stage(depdir, [dependency_object._basedir+'/'])
-
+        self.stage.stage('python', ['./'])
 
 # Create and register this package
 PyNuoCA()

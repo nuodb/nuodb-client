@@ -25,24 +25,15 @@ class PyNuodbPackage(Package):
         self.stage = self.staged[0]
 
     def download(self):
-        # Find the latest release
-        pypi = PyPIMetadata(self.__PKGNAME)
-
-        self.setversion(pypi.version)
-
-        self._file = Artifact(self.name, 'pynuodb.tar.gz',
-                              pypi.pkgurl, chksum=pypi.pkgchksum)
-        self._file.update()
+        pass
 
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        unpack_file(self._file.path, self.pkgroot)
-        self.stage.basedir = os.path.join(self.pkgroot, 'pynuodb-{}'.format(self.stage.version))
+        run(['pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
 
     def install(self):
-        self.stage.stage('python', ['pynuodb'])
-        self.stage.stage('doc', ['README.rst', 'LICENSE'])
+        self.stage.stage('python', ['./'])
 
 
 # Create and register this package
