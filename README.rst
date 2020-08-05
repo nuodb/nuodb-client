@@ -2,6 +2,9 @@
 NuoDB Client Package
 ====================
 
+.. image:: https://travis-ci.org/nuodb/nuodb-client.svg?branch=master
+    :target: https://travis-ci.org/nuodb/nuodb-client
+
 .. contents::
 
 The NuoDB Client Package bundles the latest publicly-available NuoDB_ database client verions into a single downloadable

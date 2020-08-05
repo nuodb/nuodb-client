@@ -9,6 +9,8 @@
 *.pyc
 *.pyo
 
+.idea
+
 /obj/
 /downloads/
 /package/
