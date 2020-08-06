@@ -4,6 +4,8 @@
 
 import os
 
+import sys
+
 from client.package import Package
 from client.stage import Stage
 from client.utils import rmdir, mkdir, run, Globals
@@ -33,7 +35,7 @@ class PyNuoadminPackage(Package):
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        run(['pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
+        run([sys.executable, 'pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
 
     def install(self):
         self.stage.stage('python', ['./'])
