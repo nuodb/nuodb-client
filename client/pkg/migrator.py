@@ -20,7 +20,7 @@ class MigratorPackage(Package):
         super(MigratorPackage, self).__init__(self.__PKGNAME)
         self._zip = None
 
-        self.staged = [Stage('migrator',
+        self.staged = [Stage(self.__PKGNAME,
                              title='NuoDB Migrator',
                              requirements='Java 8 or 11')]
         self.stage = self.staged[0]
