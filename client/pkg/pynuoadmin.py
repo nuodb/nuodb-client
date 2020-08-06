@@ -6,8 +6,8 @@ import os
 
 from client.package import Package
 from client.stage import Stage
-from client.artifact import PyPIMetadata, Artifact
-from client.utils import *
+from client.utils import rmdir, mkdir, run, Globals
+
 
 class PyNuoadminPackage(Package):
     """Add the NuoDB pynuoadmin client."""
@@ -29,9 +29,6 @@ class PyNuoadminPackage(Package):
     def prereqs(self):
         # We need nuodb to get nuokeymanager.jar
         return ['nuodb']
-
-    def download(self):
-        pass
 
     def unpack(self):
         rmdir(self.pkgroot)

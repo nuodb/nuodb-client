@@ -2,12 +2,10 @@
 #
 # Add the nuodb-python client
 
-import os
-
 from client.package import Package
 from client.stage import Stage
-from client.artifact import PyPIMetadata, Artifact
-from client.utils import *
+from client.utils import rmdir, mkdir, run
+
 
 class PyNuodbPackage(Package):
     """Add the NuoDB nuodb-python client."""
@@ -23,9 +21,6 @@ class PyNuodbPackage(Package):
                              requirements='Python 2 or 3')]
         # There's only one, make it simple
         self.stage = self.staged[0]
-
-    def download(self):
-        pass
 
     def unpack(self):
         rmdir(self.pkgroot)
