@@ -25,7 +25,7 @@ class PyNuoCA(Package):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
 
-        run(['pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
+        run(['python', '-m', 'pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
 
     def install(self):
         self.stage.stage('python', ['./'])
