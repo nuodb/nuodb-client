@@ -1,7 +1,8 @@
 NuoDB Client Package
 ====================
 
-Version: ${VERSION}
+Version:  ${VERSION}
+Build:    ${BUILD}-${COMMIT}
 
 This package provides a collection of publicly-available clients for the
 NuoDB database.  Details of each package provided including its version,

@@ -15,7 +15,7 @@ from datetime import datetime
 from client.exceptions import ClientError
 from client.package import Package
 from client.utils import Globals, info
-from client.utils import run, mkdir, rmdir, rmfile, rmrf
+from client.utils import run, runout, mkdir, rmdir, rmfile, rmrf
 from client.utils import copyinto, copyfiles, loadfile, savefile
 
 # Import all packages
@@ -35,6 +35,10 @@ GROUP = 'nuodb'
 
 def build_clients(packages):
     version = datetime.now().strftime("%Y%m%d")
+    buildid = Globals.buildid
+    (ret, out, err) = runout(['git', 'rev-parse', '--short=10', 'HEAD'])
+    commit = out if ret == 0 else 'UNK'
+
     target = Globals.target
     pkgname = 'nuodb-client-{}.{}'.format(version, target)
 
@@ -72,6 +76,8 @@ Contents:
 
     # Construct the various values for the README file
     replace = {'VERSION': version,
+               'BUILD': buildid,
+               'COMMIT': commit,
                'LICENSE': Package.getlicense('3BSD'),
                'MANIFEST': '\n'.join(manifest),
                'PACKAGES': '\n\n'.join(packages)}
@@ -139,6 +145,11 @@ def main():
         help="Clean previous builds.  Downloads are not cleaned.")
 
     parser.add_argument(
+        "--build",
+        default=0,
+        help="NuoDB Client build number")
+
+    parser.add_argument(
         "--real-clean",
         action="store_true",
         help="Clean previous builds and downloads.")
@@ -153,7 +164,9 @@ def main():
 
     options = parser.parse_args()
 
-    Globals.setup(isverbose=options.verbose, target=options.platform)
+    Globals.setup(isverbose=options.verbose,
+                  target=options.platform,
+                  buildid=options.build)
 
     try:
         if options.clean or options.real_clean:
