@@ -7,7 +7,7 @@ import os
 from client.package import Package
 from client.stage import Stage
 from client.artifact import MavenMetadata, Artifact
-from client.utils import *
+from client.utils import mkdir, rmdir, copy, savefile
 
 class JDBCPackage(Package):
     """Add the NuoDB JDBC client."""

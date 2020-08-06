@@ -3,7 +3,8 @@
 import os
 import json
 
-from client.utils import Globals, loadfile, savefile, getcontents, mkdir, rmdir, rmfile, copy, copyinto
+from client.utils import Globals, loadfile, savefile, getcontents
+from client.utils import mkdir, rmdir, rmfile, copy, copyinto
 
 
 class Stage(object):

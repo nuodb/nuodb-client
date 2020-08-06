@@ -4,7 +4,7 @@ __all__ = ['Globals', 'info', 'verbose', 'error',
            'mkdir', 'rmrf', 'rmdir', 'rmfile', 'rmfiles',
            'copy', 'copyinto', 'copyfiles', 'getcontents',
            'loadfile', 'savefile', 'unpack_file',
-           'which', 'runcmd', 'run', 'runout', 'runpip']
+           'which', 'runcmd', 'run', 'runout', 'pipinstall']
 
 import os
 import re
@@ -15,7 +15,7 @@ import subprocess
 import sys
 import glob
 
-from client.exceptions import *
+from client.exceptions import UnpackError, CommandError
 
 
 class Globals(object):
@@ -219,10 +219,6 @@ def unpack_file(filenm, dest):
 # - Looks first in extrapaths if given.
 # - Lastly looks in PATH
 def which(prog, extrapaths=None):
-    if os.path.dirname(prog):
-        # It's a pathname, not just a file, so don't search paths
-        return findprog(prog)
-
     def ext_candidates(path):
         if Globals.iswindows:
             # If path has an extension already try path first.
@@ -239,6 +235,10 @@ def which(prog, extrapaths=None):
             if os.path.isfile(exe) and os.access(exe, os.X_OK):
                 return exe
         return None
+
+    if os.path.dirname(prog):
+        # It's a pathname, not just a file, so don't search paths
+        return findprog(prog)
 
     paths = list(extrapaths) if extrapaths else []
     paths += os.environ.get("PATH", "").split(os.pathsep)
@@ -322,6 +322,6 @@ def runout(args, **kwargs):
     except StandardError as ex:
         return (1, '', str(ex))
 
-
-def runpip(package_name, package_root):
-    return run([sys.executable, '-m', 'pip', 'install', package_name, '-t', package_root])
+def pipinstall(pkgname, pkgroot):
+    # Use pip to install a package and its prerequisites
+    run([sys.executable, '-m', 'pip', 'install', '-t', pkgroot, pkgname])

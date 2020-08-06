@@ -5,7 +5,7 @@
 from client.package import Package
 from client.stage import Stage
 from client.artifact import GitHubMetadata, Artifact
-from client.utils import *
+from client.utils import Globals, rmdir, mkdir, unpack_file
 
 class MigratorPackage(Package):
     """Add the NuoDB migrator client."""

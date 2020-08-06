@@ -7,7 +7,7 @@ import os
 from client.package import Package
 from client.stage import Stage
 from client.artifact import Artifact
-from client.utils import *
+from client.utils import Globals, mkdir, rmdir, loadfile, unpack_file
 
 class NuoDBPackage(Package):
     """Extract NuoDB clients from the database package."""
