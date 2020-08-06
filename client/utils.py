@@ -324,4 +324,4 @@ def runout(args, **kwargs):
 
 
 def runpip(package_name, package_root):
-    return run([sys.executable, 'pip', '-m', 'install', package_name, '-t', package_root])
+    return run([sys.executable, '-m', 'pip', 'install', package_name, '-t', package_root])
