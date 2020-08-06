@@ -4,7 +4,7 @@ __all__ = ['Globals', 'info', 'verbose', 'error',
            'mkdir', 'rmrf', 'rmdir', 'rmfile', 'rmfiles',
            'copy', 'copyinto', 'copyfiles', 'getcontents',
            'loadfile', 'savefile', 'unpack_file',
-           'which', 'runcmd', 'run', 'runout']
+           'which', 'runcmd', 'run', 'runout', 'runpip']
 
 import os
 import re
@@ -321,3 +321,7 @@ def runout(args, **kwargs):
         return (proc.wait(), out, err)
     except StandardError as ex:
         return (1, '', str(ex))
+
+
+def runpip(package_name, package_root):
+    return run([sys.executable, 'pip', '-m', 'install', package_name, '-t', package_root])

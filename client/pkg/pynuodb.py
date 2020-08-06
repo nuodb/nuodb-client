@@ -2,11 +2,9 @@
 #
 # Add the nuodb-python client
 
-import sys
-
 from client.package import Package
 from client.stage import Stage
-from client.utils import rmdir, mkdir, run
+from client.utils import rmdir, mkdir, runpip
 
 
 class PyNuodbPackage(Package):
@@ -27,7 +25,7 @@ class PyNuodbPackage(Package):
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        run([sys.executable, 'pip', 'install', self.__PKGNAME, '-t', self.pkgroot])
+        runpip(self.__PKGNAME, self.pkgroot)
 
     def install(self):
         self.stage.stage('python', ['./'])
