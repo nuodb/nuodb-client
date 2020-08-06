@@ -4,7 +4,7 @@ __all__ = ['Globals', 'info', 'verbose', 'error',
            'mkdir', 'rmrf', 'rmdir', 'rmfile', 'rmfiles',
            'copy', 'copyinto', 'copyfiles', 'getcontents',
            'loadfile', 'savefile', 'unpack_file',
-           'which', 'runcmd', 'run', 'runout', 'runpip']
+           'which', 'runcmd', 'run', 'runout', 'pipinstall']
 
 import os
 import re
@@ -15,7 +15,7 @@ import subprocess
 import sys
 import glob
 
-from client.exceptions import *
+from client.exceptions import UnpackError, CommandError
 
 
 class Globals(object):
@@ -72,13 +72,16 @@ def info(text):
     sys.stdout.write(text+"\n")
     sys.stdout.flush()
 
+
 def verbose(text):
     if Globals.isverbose:
         info(text)
 
+
 def error(text):
     sys.stderr.write(text+"\n")
     sys.stderr.flush()
+
 
 # ----- Manage directories
 
@@ -89,11 +92,13 @@ def mkdir(newpath):
         if ex.errno != os.errno.EEXIST:
             raise
 
+
 def _rmdir_helper(func, path, _):
     if func == os.remove:
         rmfile(path)
     else:
         raise OSError(1, "Failed to remove {}".format(path))
+
 
 def rmdir(dirname):
     verbose("Removing directory {}".format(dirname))
@@ -102,16 +107,19 @@ def rmdir(dirname):
     if os.path.exists(dirname):
         shutil.rmtree(dirname, False, _rmdir_helper)
 
+
 def rmfile(filename):
     verbose("Removing file {}".format(filename))
     if os.path.exists(filename):
         if not os.path.islink(filename):
-            os.chmod(filename, stat.S_IREAD|stat.S_IWRITE)
+            os.chmod(filename, stat.S_IREAD | stat.S_IWRITE)
         os.remove(filename)
+
 
 def rmfiles(files):
     for f in files:
         rmfile(f)
+
 
 def rmrf(paths):
     for path in paths:
@@ -119,6 +127,7 @@ def rmrf(paths):
             rmdir(path)
         else:
             rmfile(path)
+
 
 # Copies SRC to DST
 # Uses shutil.copy2()
@@ -171,9 +180,11 @@ def loadfile(filename):
     with open(filename, "r") as f:
         return f.read()
 
+
 def savefile(filename, txt):
     with open(filename, "w") as f:
         f.write(txt)
+
 
 def unpack_file(filenm, dest):
     # Ugh.  On Windows we have to use --force-local with tar otherwise
@@ -212,6 +223,7 @@ def unpack_file(filenm, dest):
     if ret != 0:
         raise UnpackError("Failed to extract {}:\n{}{}".format(filenm, out, err))
 
+
 # ----- Run commands
 
 # Find a program (taken from build/test/shared/python/NuoDBOS.py:
@@ -219,10 +231,6 @@ def unpack_file(filenm, dest):
 # - Looks first in extrapaths if given.
 # - Lastly looks in PATH
 def which(prog, extrapaths=None):
-    if os.path.dirname(prog):
-        # It's a pathname, not just a file, so don't search paths
-        return findprog(prog)
-
     def ext_candidates(path):
         if Globals.iswindows:
             # If path has an extension already try path first.
@@ -240,6 +248,10 @@ def which(prog, extrapaths=None):
                 return exe
         return None
 
+    if os.path.dirname(prog):
+        # It's a pathname, not just a file, so don't search paths
+        return findprog(prog)
+
     paths = list(extrapaths) if extrapaths else []
     paths += os.environ.get("PATH", "").split(os.pathsep)
 
@@ -249,7 +261,10 @@ def which(prog, extrapaths=None):
             return exe
     return None
 
+
 _SPECIAL_CHARS = None
+
+
 def _quotearg(arg):
     global _SPECIAL_CHARS
     if not _SPECIAL_CHARS:
@@ -263,11 +278,13 @@ def _quotearg(arg):
 
     return "'{}'".format(arg.replace("'", r"'\''"))
 
+
 def _getcmd(args, kwargs):
     shl = ', shell={}'.format(str(kwargs['shell']) if 'shell' in kwargs else '')
     return '{}>> {}{}'.format(kwargs.get('cwd', '.'),
                               ' '.join([_quotearg(a) for a in args]),
                               shl)
+
 
 def runcmd(args, **kwargs):
     argstr = _getcmd(args, kwargs)
@@ -299,6 +316,7 @@ def runcmd(args, **kwargs):
     sys.stdout.flush()
     return subprocess.Popen(args, **kwargs)
 
+
 def run(args, **kwargs):
     try:
         proc = runcmd(args, **kwargs)
@@ -310,6 +328,7 @@ def run(args, **kwargs):
     ret = proc.wait()
     if ret != 0:
         raise CommandError("Failed ({}): {}".format(ret, _getcmd(args, kwargs)))
+
 
 def runout(args, **kwargs):
     # Run a command and return (code, stdout, stderr)
@@ -323,5 +342,6 @@ def runout(args, **kwargs):
         return (1, '', str(ex))
 
 
-def runpip(package_name, package_root):
-    return run([sys.executable, '-m', 'pip', 'install', package_name, '-t', package_root])
+def pipinstall(pkgname, pkgroot):
+    # Use pip to install a package and its prerequisites
+    run([sys.executable, '-m', 'pip', 'install', '-t', pkgroot, pkgname])

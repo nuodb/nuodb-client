@@ -8,6 +8,7 @@ import os
 import hashlib
 import ssl
 import json
+import re
 import xml.etree.ElementTree as ET
 
 try:
@@ -18,11 +19,14 @@ except ImportError:
     # Python2
     from urllib2 import urlopen, URLError, HTTPError
 
-from client.exceptions import *
-from client.utils import *
+from client.exceptions import DownloadError
+from client.utils import Globals, verbose, mkdir, rmfile, rmdir
+from client.utils import run, runout, which
 
 
 __CONTEXT = None
+
+
 def _getremotedata(url):
     """Read a remote URL and return its data.
        This is probably not efficient for large downloads..."""
@@ -63,7 +67,7 @@ class GitHubMetadata(object):
         self.metadata = json.loads(_getremotedata(url))
         self.version = self.metadata['name']
 
-        if self.metadata['assets']:
+        if self.metadata.get('assets'):
             self.pkgurl = self.metadata['assets'][0]['browser_download_url']
         else:
             self.pkgurl = self.metadata['zipball_url']

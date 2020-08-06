@@ -7,7 +7,8 @@ import os
 from client.package import Package
 from client.stage import Stage
 from client.artifact import MavenMetadata, Artifact
-from client.utils import *
+from client.utils import mkdir, rmdir, copy, savefile
+
 
 class HibernatePackage(Package):
     """Add the NuoDB Hibernate (3 and 5) clients."""
@@ -46,10 +47,12 @@ class HibernatePackage(Package):
                 self.stage5.version = ver.text
 
         self._hib3 = Artifact(self.name, 'nuodb-hibernate-hib3.jar',
-                              '{}/{}/{}'.format(mvn.baseurl, self.stage3.version, self.__JAR.format(self.stage3.version)))
+                              '{}/{}/{}'.format(mvn.baseurl, self.stage3.version,
+                                                self.__JAR.format(self.stage3.version)))
 
         self._hib5 = Artifact(self.name, 'nuodb-hibernate-hib5.jar',
-                              '{}/{}/{}'.format(mvn.baseurl, self.stage5.version, self.__JAR.format(self.stage5.version)))
+                              '{}/{}/{}'.format(mvn.baseurl,
+                                                self.stage5.version, self.__JAR.format(self.stage5.version)))
 
         # We only download the actual jar files
         self._hib3.update()
