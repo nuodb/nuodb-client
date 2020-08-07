@@ -30,5 +30,6 @@ class PyNuoCA(Package):
     def install(self):
         self.stage.stage('python', ['./'])
 
+
 # Create and register this package
 PyNuoCA()

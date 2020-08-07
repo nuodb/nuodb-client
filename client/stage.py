@@ -12,7 +12,6 @@ class Stage(object):
 
     stagedir = None
     version = None
-    usage = None
 
     basedir = None
     completed = None
@@ -20,6 +19,9 @@ class Stage(object):
     stagefile = None
     stagedir = None
     _staged = None
+
+    # Any files here will be omitted from the generated results
+    omitcontents = []
 
     def __init__(self, name, title=None, requirements=None):
         self.name = name
@@ -89,4 +91,5 @@ class Stage(object):
 
     def getcontents(self):
         assert self.completed
-        return getcontents(self.stagedir)
+        contents = getcontents(self.stagedir)
+        return [f for f in contents if f not in self.omitcontents]
