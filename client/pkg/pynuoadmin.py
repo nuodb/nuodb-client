@@ -1,16 +1,19 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2020  All Rights Reserved.
 #
 # Add the pynuoadmin client
 
 import os
 
+from client.artifact import PyPIMetadata
 from client.package import Package
 from client.stage import Stage
 from client.utils import Globals, rmdir, mkdir, pipinstall
 
 
 class PyNuoadminPackage(Package):
-    """Add the NuoDB pynuoadmin client."""
+    """Add the NuoDB pynuoadmin client.
+This pulls the latest version available from PyPI.
+"""
 
     __PKGNAME = 'pynuoadmin'
 
@@ -27,26 +30,38 @@ class PyNuoadminPackage(Package):
         self.stage = self.staged[0]
 
     def prereqs(self):
-        # We need nuodb to get nuokeymanager.jar
-        return ['nuodb']
+        # We need nuodb to get nuokeymanager.jar and pynuoadmin uses pynuodb
+        return ['nuodb', 'pynuodb']
 
     def unpack(self):
+        pypi = PyPIMetadata(self.__PKGNAME)
+        self.setversion(pypi.version)
+
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        pipinstall(self.__PKGNAME, self.pkgroot)
+        pipinstall('%s[completion]==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
 
     def install(self):
-        self.stage.stage('python', ['./'])
+        # Omit the files that were installed due to pynuodb
+        self.stage.omitcontents = Package.get_package('pynuodb').staged[0].getcontents()
+
+        self.stage.stage(os.path.join('python', 'site-packages'), ['./'])
 
         nuodb = self.get_package('nuodb')
-        self.stage.stage('jar', [os.path.join(nuodb.staged[0].basedir, 'jar', 'nuokeymanager.jar')])
-        self.stage.stage('python', [os.path.join(nuodb.staged[0].basedir, 'drivers', 'pynuoadmin', 'nuocmd-complete')])
 
-        if Globals.target == 'lin64':
-            self.stage.stage('bin', [os.path.join(nuodb.staged[0].basedir, 'bin', 'nuocmd')])
-            self.stage.stagefiles('etc', os.path.join(nuodb.staged[0].basedir, 'etc'), ['run-java-app.sh', 'nuokeymgr'])
-        else:
-            self.stage.stage('bin', [os.path.join(nuodb.staged[0].basedir, 'bin', 'nuocmd.bat')])
+        # This needs to go two levels below the root, as it contains a ../..
+        # to find the root.
+        self.stage.stage(os.path.join('etc', self.__PKGNAME),
+                         [os.path.join(nuodb.staged[0].basedir, 'drivers', 'pynuoadmin', 'nuocmd-complete')])
+
+        self.stage.stage('jar', [os.path.join(nuodb.staged[0].basedir, 'jar', 'nuokeymanager.jar')])
+
+        # Always install sh scripts: Windows may  have a POSIX shell available
+        self.stage.stage('bin', [os.path.join(Globals.bindir, 'nuocmd')])
+        self.stage.stagefiles('etc', os.path.join(nuodb.staged[0].basedir, 'etc'), ['run-java-app.sh', 'nuokeymgr'])
+
+        if Globals.target == 'win64':
+            self.stage.stage('bin', [os.path.join(Globals.bindir, 'nuocmd.bat')])
             self.stage.stagefiles('etc', os.path.join(nuodb.staged[0].basedir, 'etc'), ['nuokeymgr.bat'])
 
 
