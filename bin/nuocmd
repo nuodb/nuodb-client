@@ -9,26 +9,26 @@ die () { echo "$*"; exit 1; }
 
 # Find the installation directory.
 CMD=${0##*/}
-DIR=`cd "${0%$CMD}." && pwd`
+DIR=$(cd "${0%$CMD}." && pwd)
 
 # Find Python2
-_python=$PYTHON
-if [ -z "$_python" ]; then
+_python=${NUOPYTHON:-$PYTHON}
+if test -z "$_python"; then
     _python=$(command -v python2.7) \
         || _python=$(command -v python2) \
         || _python=$(command -v python) \
-        || die "Python must be installed"
+        || die "Python2 must be installed"
 fi
 
 # Find the pynuoadmin installation
+_pkgdir=etc/python/site-packages
+_cli="$_pkgdir/nuodb_cli.py"
 _home=
-[ -n "$NUOCLIENT_HOME" ] && [ -f "$NUOCLIENT_HOME"/python/pynuoadmin/nuodb_cli.py ] \
+test -n "$NUOCLIENT_HOME" && test -f "$NUOCLIENT_HOME/$_cli" \
     && _home="$NUOCLIENT_HOME"
-[ -z "$_home" ] && [ -f "${DIR%/*}"/python/pynuoadmin/nuodb_cli.py ] \
+test -z "$_home" && test -f "${DIR%/*}/$_cli" \
     && _home="${DIR%/*}"
-[ -n "$_home" ] || die "Cannot locate pynuoadmin installation"
+test -n "$_home" || die "Cannot locate pynuoadmin installation"
 
-# Allow location of argcomplete
-export PYTHONPATH="$_home/python/pynuoadmin:${PYTHONPATH:+$PYTHONPATH:}$_home/python/argcomplete"
-
+export PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$_home/$_pkgdir"
 exec "$_python" -m nuodb_cli "$@"

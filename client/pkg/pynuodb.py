@@ -2,6 +2,9 @@
 #
 # Add the nuodb-python client
 
+import os
+
+from client.artifact import PyPIMetadata
 from client.package import Package
 from client.stage import Stage
 from client.utils import rmdir, mkdir, pipinstall
@@ -23,12 +26,15 @@ class PyNuodbPackage(Package):
         self.stage = self.staged[0]
 
     def unpack(self):
+        pypi = PyPIMetadata(self.__PKGNAME)
+        self.setversion(pypi.version)
+
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        pipinstall(self.__PKGNAME, self.pkgroot)
+        pipinstall('%s[crypto]==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
 
     def install(self):
-        self.stage.stage('python', ['./'])
+        self.stage.stage(os.path.join('etc', 'python', 'site-packages'), ['./'])
 
 
 # Create and register this package
