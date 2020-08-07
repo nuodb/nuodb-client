@@ -39,17 +39,26 @@ class Package(object):
 
     @classmethod
     def build_all(cls, pkglist):
+        # Recursively discover prerequisites.  We won't try to remove
+        # dups: we'll just only build things once.  It can get stuck in
+        # infinite loop so... just don't do that!
+        prereqs = []
+        nextlist = list(pkglist)
+        while nextlist:
+            prereqs += list(nextlist)
+            newlist = []
+            for name in nextlist:
+                pkg = Package._PACKAGES[name]
+                newlist += pkg.prereqs()
+            nextlist = newlist
+
+        # The prereqs we want to build first are at the end
+        prereqs.reverse()
+
         built = []
-        for name in pkglist:
-            pkg = Package._PACKAGES[name]
-
-            # Build any prerequisites, even if we wouldn't build them otherwise
-            for pre in pkg.prereqs():
-                if pre not in built:
-                    Package._PACKAGES[pre].build()
-                    built.append(pre)
-
+        for name in prereqs:
             if name not in built:
+                pkg = Package._PACKAGES[name]
                 pkg.build()
                 built.append(name)
 
