@@ -105,7 +105,7 @@ def create_package(pkgname):
         out = '{}.zip'.format(pkgname)
         rmfile(out)
         info("Creating {} ...".format(out))
-        run(['zip', '-r', out, pkgname], cwd=Globals.finalroot)
+        run(['7z.exe', 'a', '-bd', '-tzip', out, pkgname], cwd=Globals.finalroot)
 
 def main():
     Globals.init(clientroot=os.path.dirname(os.path.realpath(__file__)))
