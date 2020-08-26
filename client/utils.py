@@ -309,8 +309,10 @@ def runcmd(args, **kwargs):
             func()
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
-    ufn = kwargs.get('preexec_fn')
-    kwargs['preexec_fn'] = lambda: _wrap_sigdfl(ufn)
+    # The preexec_fn only works on linux
+    if Globals.target == 'lin64':
+        ufn = kwargs.get('preexec_fn')
+        kwargs['preexec_fn'] = lambda: _wrap_sigdfl(ufn)
 
     # Run the program
     sys.stdout.flush()
