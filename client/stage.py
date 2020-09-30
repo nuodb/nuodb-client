@@ -21,13 +21,18 @@ class Stage(object):
     _staged = None
 
     # Any files here will be omitted from the generated results
-    omitcontents = []
+    omitcontents = None
+
+    # Any files here will be added to the generated results
+    extracontents = None
 
     def __init__(self, name, title=None, requirements=None):
         self.name = name
         self.title = title
         self.requirements = requirements
-        self._staged = {}
+        self._staged = []
+        self.omitcontents = []
+        self.extracontents = []
 
     def setup(self, basedir):
         stgroot = Globals.stageroot
@@ -49,15 +54,11 @@ class Stage(object):
         self.completed = False
         self.version = None
 
-    def stage(self, dest, files):
-        if dest not in self._staged:
-            self._staged[dest] = []
-        self._staged[dest].extend(files)
+    def stage(self, dest, files, ignore=None):
+        self._staged.append((dest, list(files), ignore))
 
-    def stagefiles(self, dest, src, files):
-        if dest not in self._staged:
-            self._staged[dest] = []
-        self._staged[dest].extend([os.path.join(src, f) for f in files])
+    def stagefiles(self, dest, src, files, ignore=None):
+        self._staged.append((dest, [os.path.join(src, f) for f in files], ignore))
 
     def clean(self):
         rmfile(self.stagefile)
@@ -65,19 +66,19 @@ class Stage(object):
 
     def complete(self):
         self.clean()
-        for dest, files in self._staged.items():
-            if dest in ['doc', 'sample']:
-                ddir = os.path.join(self.stagedir, dest, self.name)
+        for dat in self._staged:
+            if dat[0] in ['doc', 'sample']:
+                ddir = os.path.join(self.stagedir, dat[0], self.name)
             else:
-                ddir = os.path.join(self.stagedir, dest)
+                ddir = os.path.join(self.stagedir, dat[0])
             mkdir(ddir)
-            for f in files:
+            for f in dat[1]:
                 if not os.path.isabs(f):
                     f = os.path.join(self.basedir, f)
                 if f.endswith('/'):
-                    copyinto(f[:-1], ddir)
+                    copyinto(f[:-1], ddir, ignore=dat[2])
                 else:
-                    copy(f, ddir)
+                    copy(f, ddir, ignore=dat[2])
 
         self.completed = True
 
@@ -92,4 +93,4 @@ class Stage(object):
     def getcontents(self):
         assert self.completed
         contents = getcontents(self.stagedir)
-        return [f for f in contents if f not in self.omitcontents]
+        return [f for f in contents if f not in self.omitcontents] + self.extracontents

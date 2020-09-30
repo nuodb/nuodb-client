@@ -33,6 +33,7 @@ os.environ['COPYFILE_DISABLE'] = 'true'
 USER = 'nuodb'
 GROUP = 'nuodb'
 
+
 def build_clients(packages):
     version = datetime.now().strftime("%Y%m%d")
     buildid = Globals.buildid
@@ -95,6 +96,7 @@ Contents:
 
     return pkgname
 
+
 def create_package(pkgname):
     if Globals.target == 'lin64':
         out = '{}.tar.gz'.format(pkgname)
@@ -106,6 +108,7 @@ def create_package(pkgname):
         rmfile(out)
         info("Creating {} ...".format(out))
         run(['zip', '-r', out, pkgname], cwd=Globals.finalroot)
+
 
 def main():
     Globals.init(clientroot=os.path.dirname(os.path.realpath(__file__)))
@@ -193,5 +196,6 @@ def main():
 
     except ClientError as ex:
         sys.exit("Failed: {}".format(str(ex)))
+
 
 main()

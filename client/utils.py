@@ -131,31 +131,48 @@ def rmrf(paths):
 
 # Copies SRC to DST
 # Uses shutil.copy2()
-def copy(src, dst):
+def copy(src, dst, ignore=None):
     verbose("  Copying {} to {}".format(src, dst))
     if os.path.isdir(src):
         if os.path.exists(dst):
             dst = os.path.join(dst, os.path.basename(src))
             if os.path.exists(dst):
-                copyinto(src, dst)
+                copyinto(src, dst, ignore=ignore)
                 return
-        shutil.copytree(src, dst, symlinks=True)
-    else:
-        for path in glob.glob(src):
+        shutil.copytree(src, dst, symlinks=True, ignore=ignore)
+        return
+
+    paths = glob.glob(src)
+    if ignore is None:
+        for path in paths:
             shutil.copy2(path, dst)
+        return
+
+    dirs = {}
+    for p in paths:
+        (d, f) = os.path.split(p)
+        if d in dirs:
+            dirs[d].append(f)
+        else:
+            dirs[d] = [f]
+    for (path, files) in dirs.items():
+        ignored = ignore(path, files)
+        for f in files:
+            if f not in ignored:
+                shutil.copy2(os.path.join(path, f), dst)
 
 
 # Copies SRCDIR to DSTDIR
 # Copies the contents of SRCIR into DSTDIR
-def copyinto(srcdir, dstdir):
+def copyinto(srcdir, dstdir, ignore=None):
     for fnm in os.listdir(srcdir):
-        copy(os.path.join(srcdir, fnm), dstdir)
+        copy(os.path.join(srcdir, fnm), dstdir, ignore=ignore)
 
 
 # Copy SRCLIST from SRCDIR to DSTDIR
-def copyfiles(srclist, srcdir, dstdir):
+def copyfiles(srclist, srcdir, dstdir, ignore=None):
     for src in srclist:
-        copy(os.path.join(srcdir, src), dstdir)
+        copy(os.path.join(srcdir, src), dstdir, ignore=ignore)
 
 
 # Return a list of the files (not directories) starting at basedir
