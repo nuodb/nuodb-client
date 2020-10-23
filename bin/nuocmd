@@ -22,7 +22,7 @@ fi
 
 # Find the pynuoadmin installation
 _pkgdir=etc/python/site-packages
-_cli="$_pkgdir/nuodb_cli.py"
+_cli="$_pkgdir/pynuoadmin/nuodb_cli.py"
 _home=
 test -n "$NUOCLIENT_HOME" && test -f "$NUOCLIENT_HOME/$_cli" \
     && _home="$NUOCLIENT_HOME"
@@ -31,4 +31,4 @@ test -z "$_home" && test -f "${DIR%/*}/$_cli" \
 test -n "$_home" || die "Cannot locate pynuoadmin installation"
 
 export PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$_home/$_pkgdir"
-exec "$_python" -m nuodb_cli "$@"
+exec "$_python" -m pynuoadmin.nuodb_cli "$@"
