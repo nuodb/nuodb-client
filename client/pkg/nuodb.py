@@ -4,10 +4,11 @@
 
 import os
 
+from client.exceptions import DownloadError
 from client.package import Package
 from client.stage import Stage
 from client.artifact import Artifact
-from client.utils import Globals, mkdir, rmdir, loadfile, unpack_file
+from client.utils import Globals, mkdir, rmdir, loadfile, unpack_file, verbose
 
 
 class NuoDBPackage(Package):
@@ -15,11 +16,11 @@ class NuoDBPackage(Package):
 
     __PKGNAME = 'nuodb'
 
-    __CE_URL = 'https://ce-downloads.nuohub.org'
+    __NUODB_URL = 'https://ce-downloads.nuohub.org'
     __VERSIONS = 'supportedversions.txt'
-    __TARFORMAT = 'nuodb-ce-{}.linux.x86_64'
+    __TARFORMAT = 'nuodb-{}.linux.x86_64'
     __TAREXT = '.tar.gz'
-    __ZIPFORMAT = 'nuodb-ce-{}.win64'
+    __ZIPFORMAT = 'nuodb-{}.win64'
     __ZIPEXT = '.zip'
 
     def __init__(self):
@@ -57,28 +58,48 @@ class NuoDBPackage(Package):
 
     def download(self):
         versions = Artifact(self.name, self.__VERSIONS,
-                            '{}/{}'.format(self.__CE_URL, self.__VERSIONS))
+                            '{}/{}'.format(self.__NUODB_URL, self.__VERSIONS))
         versions.get()
 
         version = loadfile(versions.path).split()[-1]
         self.setversion(version)
 
         if Globals.target == 'lin64':
-            self._dirname = self.__TARFORMAT.format(version)
-            pkgname = self._dirname + self.__TAREXT
+            fmt = self.__TARFORMAT
+            ext = self.__TAREXT
         else:
-            self._dirname = self.__ZIPFORMAT.format(version)
-            pkgname = self._dirname + self.__ZIPEXT
+            fmt = self.__ZIPFORMAT
+            ext = self.__ZIPEXT
 
-        self._pkg = Artifact(self.name, pkgname,
-                             '{}/{}'.format(self.__CE_URL, pkgname))
-        self._pkg.update()
+        try:
+            self._dirname = fmt.format(version)
+            pkgname = self._dirname + ext
+            self._pkg = Artifact(self.name, pkgname,
+                                 '{}/{}'.format(self.__NUODB_URL, pkgname))
+            self._pkg.update()
+        except DownloadError as ex:
+            # Older releases publish packages named with a "ce" label; try that
+            try:
+                self._dirname = fmt.format('ce-'+version)
+                pkgname = self._dirname + ext
+                self._pkg = Artifact(self.name, pkgname,
+                                     '{}/{}'.format(self.__NUODB_URL, pkgname))
+                self._pkg.update()
+            except DownloadError:
+                raise ex
 
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
         unpack_file(self._pkg.path, self.pkgroot)
         udir = os.path.join(self.pkgroot, self._dirname)
+
+        # Newer versions of NuoDB don't ship nuodbmanager any longer
+        if not os.path.exists(os.path.join(udir, 'jar', 'nuodbmanager.jar')):
+            verbose('Obsolete nuodbmanager is not present.')
+            stg = self.stgs.pop('nuodbmgr')
+            self.staged.remove(stg)
+
         for stg in self.staged:
             stg.basedir = udir
 
@@ -95,10 +116,11 @@ class NuoDBPackage(Package):
         for stg in ['nuosql', 'nuoloader', 'nuoodbc', 'nuoremote', 'nuoclient']:
             self.stgs[stg].stagefiles('lib64', 'lib64', soglobs)
 
-        self.stgs['nuodbmgr'].stagefiles('jar', 'jar', ['nuodbmanager.jar'])
-        # Get the client-specific version of these scripts
-        self.stgs['nuodbmgr'].stage('bin', [os.path.join(Globals.bindir, 'nuodbmgr')])
-        self.stgs['nuodbmgr'].stage('etc', [os.path.join(Globals.etcdir, 'run-java-app.sh')])
+        if 'nuodbmgr' in self.stgs:
+            self.stgs['nuodbmgr'].stagefiles('jar', 'jar', ['nuodbmanager.jar'])
+            # Get the client-specific version of these scripts
+            self.stgs['nuodbmgr'].stage('bin', [os.path.join(Globals.bindir, 'nuodbmgr')])
+            self.stgs['nuodbmgr'].stage('etc', [os.path.join(Globals.etcdir, 'run-java-app.sh')])
 
     def _install_windows(self):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql.exe'])
@@ -115,10 +137,10 @@ class NuoDBPackage(Package):
         for stg in ['nuosql', 'nuoloader', 'nuoodbc', 'nuoremote', 'nuoclient']:
             self.stgs[stg].stagefiles('bin', 'bin', soglobs)
 
-        self.stgs['nuodbmgr'].stagefiles('jar', 'jar', ['nuodbmanager.jar'])
-
-        # Get the client-specific versions
-        self.stgs['nuodbmgr'].stage('bin', [os.path.join(Globals.bindir, 'nuodbmgr.bat')])
+        if 'nuodbmgr' in self.stgs:
+            self.stgs['nuodbmgr'].stagefiles('jar', 'jar', ['nuodbmanager.jar'])
+            # Get the client-specific versions
+            self.stgs['nuodbmgr'].stage('bin', [os.path.join(Globals.bindir, 'nuodbmgr.bat')])
 
     def install(self):
         if Globals.target == 'lin64':
@@ -135,7 +157,7 @@ class NuoDBPackage(Package):
         self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'doc', 'c')])
 
         for stg in self.staged:
-            stg.stage('doc', ['README.txt', 'ce_license.txt'])
+            stg.stage('doc', ['README.txt', 'license.txt', 'ce_license.txt'])
 
 
 # Create and register this package

@@ -29,8 +29,9 @@ __CONTEXT = None
 
 def _getremotedata(url):
     """Read a remote URL and return its data.
-       This is probably not efficient for large downloads..."""
 
+    This is probably not efficient for large downloads...
+    """
     global __CONTEXT
     if __CONTEXT is None:
         # Ignore cert: insecure but...
@@ -47,9 +48,13 @@ def _getremotedata(url):
         return remote.read()
 
     except HTTPError as ex:
-        raise DownloadError("HTTP Error: {}\nFailed reading {}".format(str(ex.reason), url))
+        msg = "HTTP Error: {}\nFailed reading {}".format(str(ex.reason), url)
+        verbose("Download failed: {}".format(msg))
+        raise DownloadError(msg)
     except URLError as ex:
-        raise DownloadError("URL Error: {}\nFailed reading {}".format(str(ex.reason), url))
+        msg = "URL Error: {}\nFailed reading {}".format(str(ex.reason), url)
+        verbose("Download failed: {}".format(msg))
+        raise DownloadError(msg)
     finally:
         if remote:
             remote.close()
@@ -121,8 +126,7 @@ class BaseArtifact(object):
         self.path = os.path.join(Globals.downloadroot, pkg, local)
 
     def get(self):
-        """Retrieve the artifact.
-           Subclasses implement this."""
+        """Retrieve the artifact.  Subclasses implement this."""
         raise NotImplementedError("get() is not implemented")
 
     def validate(self):
@@ -130,8 +134,7 @@ class BaseArtifact(object):
         return os.path.exists(self.path) and os.stat(self.path).st_size > 0
 
     def update(self):
-        """Get the artifact if it's not already available.
-           Users call this to retrieve artifacts."""
+        """Get the artifact if it's not already available."""
         if not self.validate():
             self.get()
 
@@ -211,7 +214,7 @@ class GitClone(BaseArtifact):
         self._run('clean', '-fdx')
         self._run('reset', '--hard')
 
-        # See if we want a SHA and of so, if it exists.  If so nothing to do.
+        # See if we want a SHA and if so, if it exists.  If so nothing to do.
         if re.match(r'[a-fA-F0-9]{5,40}$', self._ref):
             (ret, _, _) = runout([self._git, 'cat-file', '-e', self._ref+'^{commit}'], cwd=self.path)
             if ret == 0:
