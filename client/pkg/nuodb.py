@@ -41,10 +41,6 @@ class NuoDBPackage(Package):
                               title='nuodbmgr',
                               requirements='Java 8 or 11'),
 
-            'nuoodbc': Stage('nuoodbc',
-                             title='NuoODBC Driver',
-                             requirements='GNU/Linux with UnixODBC 2.3 or Windows'),
-
             'nuoremote': Stage('nuoremote',
                                title='C++ Driver',
                                requirements='GNU/Linux or Windows'),
@@ -107,13 +103,12 @@ class NuoDBPackage(Package):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql'])
         self.stgs['nuoloader'].stagefiles('bin', 'bin', ['nuoloader'])
 
-        self.stgs['nuoodbc'].stagefiles('lib64', 'lib64', ['libNuoODBC.so'])
         self.stgs['nuoremote'].stagefiles('lib64', 'lib64', ['libNuoRemote.so'])
         self.stgs['nuoclient'].stagefiles('lib64', 'lib64', ['libnuoclient.so'])
 
         # Add in shared libraries for packages that need it
         soglobs = ['libicu*.so.*', 'libmpir.so.*']
-        for stg in ['nuosql', 'nuoloader', 'nuoodbc', 'nuoremote', 'nuoclient']:
+        for stg in ['nuosql', 'nuoloader', 'nuoremote', 'nuoclient']:
             self.stgs[stg].stagefiles('lib64', 'lib64', soglobs)
 
         if 'nuodbmgr' in self.stgs:
@@ -126,7 +121,6 @@ class NuoDBPackage(Package):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql.exe'])
         self.stgs['nuoloader'].stagefiles('bin', 'bin', ['nuoloader.exe'])
 
-        self.stgs['nuoodbc'].stagefiles('bin', 'bin', ['NuoODBC.dll', 'NuoODBC.pdb'])
         self.stgs['nuoremote'].stagefiles('bin', 'bin', ['NuoRemote.dll', 'NuoRemote.pdb'])
         self.stgs['nuoremote'].stagefiles('lib', 'lib', ['NuoRemote.lib'])
         self.stgs['nuoclient'].stagefiles('bin', 'bin', ['nuoclient.dll', 'nuoclient.pdb'])
@@ -134,7 +128,7 @@ class NuoDBPackage(Package):
 
         # Add in shared libraries for packages that need it
         soglobs = ['icu*.dll', 'mpir*.dll', 'msvcp140.dll', 'vcruntime140.dll']
-        for stg in ['nuosql', 'nuoloader', 'nuoodbc', 'nuoremote', 'nuoclient']:
+        for stg in ['nuosql', 'nuoloader', 'nuoremote', 'nuoclient']:
             self.stgs[stg].stagefiles('bin', 'bin', soglobs)
 
         if 'nuodbmgr' in self.stgs:
