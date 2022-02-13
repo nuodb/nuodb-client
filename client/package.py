@@ -116,6 +116,7 @@ class Package(object):
                 runstep('validate', self.validate)
                 runstep('unpack', self.unpack)
                 runstep('patch', self.patch)
+                runstep('make', self.make)
                 runstep('test', self.test)
 
             runstep('install', self.install)
@@ -129,8 +130,7 @@ class Package(object):
 
     @staticmethod
     def prereqs():
-        """Return a list of packages that need to be built before this one,
-           if they're going to be built."""
+        """Return a list of packages that need to be built before this one."""
         return []
 
     def clean(self, real=False):
@@ -160,14 +160,19 @@ class Package(object):
         """Apply any patches."""
         pass
 
+    def make(self):
+        """Perform any make operations."""
+        pass
+
     def test(self):
         """Run any tests."""
         pass
 
     def install(self):
         """Install the final package contents into self.distroot.
-           You can use the helper variables self.bindir, self.libdir, etc."""
 
+        You can use the helper variables self.bindir, self.libdir, etc.
+        """
         # Every package needs an install step
         raise NotImplementedError("install")
 
