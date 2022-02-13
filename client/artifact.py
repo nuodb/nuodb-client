@@ -186,12 +186,15 @@ class GitClone(BaseArtifact):
         super(GitClone, self).__init__(pkg, local)
         self.url = url
         self._ref = ref
+        verbose("Creating Git repo {} from {} ref {}".format(local, url, ref))
 
     def _exists(self):
         return os.path.exists(os.path.join(self.path, '.git'))
 
     def _run(self, *args):
-        run([self._git]+args, cwd=self.path)
+        cmd = [self._git]
+        cmd.extend(args)
+        run(cmd, cwd=self.path)
 
     def _clone(self):
         # Don't keep around any half-completed repos
@@ -215,13 +218,23 @@ class GitClone(BaseArtifact):
         self._run('reset', '--hard')
 
         # See if we want a SHA and if so, if it exists.  If so nothing to do.
-        if re.match(r'[a-fA-F0-9]{5,40}$', self._ref):
-            (ret, _, _) = runout([self._git, 'cat-file', '-e', self._ref+'^{commit}'], cwd=self.path)
+        issha = re.match(r'[a-fA-F0-9]{5,40}$', self._ref) is not None
+        ref = self._ref if issha else 'origin/'+self._ref
+
+        if issha:
+            (ret, _, _) = runout([self._git, 'cat-file', '-e', ref+'^{commit}'],
+                                 cwd=self.path)
             if ret == 0:
                 return
 
-        # Check out master, then fetch and reset hard.  This is in
-        # case upstream has done a force-push
-        self._run('checkout', '-f', 'master')
+        # Get the latest content, then reset to what we want
         self._run('fetch', '-p')
-        self._run('reset', '--hard', 'origin/master')
+        self._run('reset', '--hard', ref)
+
+
+class GitHubRepo(GitClone):
+    """Class representing a GitHub repository."""
+
+    def __init__(self, pkg, localdir, repo, ref):
+        url = 'https://github.com/{}.git'.format(repo)
+        super(GitHubRepo, self).__init__(pkg, localdir, url, ref)
