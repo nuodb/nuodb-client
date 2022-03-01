@@ -17,9 +17,9 @@ class NuoDBPackage(Package):
 
     __CE_URL = 'https://ce-downloads.nuohub.org'
     __VERSIONS = 'supportedversions.txt'
-    __TARFORMAT = 'nuodb-ce-{}.linux.x86_64'
+    __TARFORMAT = 'nuodb-{}.linux.x86_64'
     __TAREXT = '.tar.gz'
-    __ZIPFORMAT = 'nuodb-ce-{}.win64'
+    __ZIPFORMAT = 'nuodb-{}.win64'
     __ZIPEXT = '.zip'
 
     def __init__(self):
