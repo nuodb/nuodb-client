@@ -21,6 +21,9 @@ from client.exceptions import UnpackError, CommandError
 class Globals(object):
     """Class containing global settings."""
 
+    __NUO_ARCH = 'x86_64'
+    __NUO_SYSROOT = 'rh75-linux-gnu'
+
     clientroot = None
     bindir = None
     etcdir = None
@@ -36,6 +39,18 @@ class Globals(object):
 
     isverbose = False
     iswindows = sys.platform == 'win32'
+
+    libdir = None
+    sodir = None
+
+    thirdparty = None
+    thirdparty_arch = None
+    thirdparty_common = None
+
+    python = sys.executable
+    cmake = None
+    cc = None
+    cxx = None
 
     @classmethod
     def init(cls, **kwargs):
@@ -65,6 +80,54 @@ class Globals(object):
         if cls.stageroot is None:
             cls.stageroot = os.path.join(cls.targroot, 'stage')
 
+        if cls.iswindows:
+            cls.libdir = 'lib'
+            cls.sodir = 'bin'
+        else:
+            cls.libdir = 'lib64'
+            cls.sodir = 'lib64'
+
+        # If there are no thirdparty settings, see if we can find any.
+        # This is for building inside the NuoDB dev environment.
+        if cls.thirdparty is None:
+            t3path = os.environ.get('THIRDPARTY_DIR')
+            t3path = os.environ.get('NUODB_THIRDPARTY', t3path)
+            if t3path is None and 'HOME' in os.environ:
+                t3path = os.path.join(os.environ['HOME'], 'nuo3rdparty')
+            if t3path is not None and os.path.isdir(t3path):
+                cls.thirdparty = t3path
+
+        if cls.thirdparty and cls.thirdparty_common is None:
+            cls.thirdparty_common = os.path.join(cls.thirdparty, 'common')
+        if cls.thirdparty_common:
+            os.environ['PATH'] = (os.path.join(cls.thirdparty_common, 'bin')
+                                  + os.pathsep + os.environ['PATH'])
+
+        if cls.thirdparty_common and cls.thirdparty_arch is None:
+            archcmd = os.path.join(t3path, 'common', 'bin', 'nuoarch')
+            (ret, out, err) = runout([archcmd])
+            if ret == 0 and out and not err:
+                cls.thirdparty_arch = os.path.join(t3path, out.rstrip())
+            else:
+                verbose("{} failed: {}: {}{}".format(archcmd, ret, out, err))
+        if cls.thirdparty_arch:
+            os.environ['PATH'] = (os.path.join(cls.thirdparty_arch, 'bin')
+                                  + os.pathsep + os.environ['PATH'])
+
+        if cls.cmake is None:
+            cls.cmake = which('cmake')
+        if cls.cc is None:
+            cls.cc = which('{}-{}-gcc'.format(cls.__NUO_ARCH, cls.__NUO_SYSROOT))
+            if cls.cc is None:
+                cls.cc = which('gcc')
+            if cls.cc is None:
+                cls.cc = which('cc')
+        if cls.cxx is None:
+            cls.cxx = which('{}-{}-c++'.format(cls.__NUO_ARCH, cls.__NUO_SYSROOT))
+            if cls.cxx is None:
+                cls.cxx = which('g++')
+            if cls.cxx is None:
+                cls.cxx = which('c++')
 
 # ----- Information
 
@@ -355,10 +418,10 @@ def runout(args, **kwargs):
         proc = runcmd(args, **kwargs)
         (out, err) = proc.communicate()
         return (proc.wait(), out, err)
-    except StandardError as ex:
+    except Exception as ex:
         return (1, '', str(ex))
 
 
 def pipinstall(pkgname, pkgroot):
     # Use pip to install a package and its prerequisites
-    run([sys.executable, '-m', 'pip', 'install', '-t', pkgroot, pkgname])
+    run([Globals.python, '-m', 'pip', 'install', '-t', pkgroot, pkgname])

@@ -8,6 +8,7 @@ Command-line tool for building the NuoDB client package.
 import os
 import sys
 import argparse
+import re
 
 from string import Template
 from datetime import datetime
@@ -18,7 +19,7 @@ from client.utils import Globals, info
 from client.utils import run, runout, mkdir, rmdir, rmfile, rmrf
 from client.utils import copyinto, copyfiles, loadfile, savefile
 
-# Import all packages
+# Import all packages.  This forces them to register themselves.
 from client.pkg import *
 
 # Also disable any per-user site-packages for safety
@@ -160,21 +161,34 @@ def main():
     parser.add_argument(
         'packages',
         metavar='PKGS',
-        default='all',
         nargs='*',
-        choices=['all']+packages,
         help='Packages to be built')
 
     options = parser.parse_args()
 
-    Globals.setup(isverbose=options.verbose,
-                  target=options.platform,
-                  buildid=options.build)
+    kwargs = {'isverbose': options.verbose,
+              'target': options.platform,
+              'buildid': options.build}
+
+    for arg in list(options.packages):
+        m = re.match(r'([^=]+)=([^\d].*)', arg)
+        if m is None:
+            if arg != 'all' and arg not in packages:
+                sys.exit("Invalid package '%s': must be one of:\n    all, %s"
+                         % (arg, ', '.join(packages)))
+        else:
+            kwargs[m.group(1)] = m.group(2)
+            options.packages.remove(arg)
+
+    if not options.packages:
+        options.packages = ['all']
+
+    Globals.setup(**kwargs)
 
     try:
         if options.clean or options.real_clean:
-            if options.packages == 'all':
-                info("Cleaning packages ...")
+            if 'all' in options.packages:
+                info("Cleaning all packages ...")
                 rmrf([Globals.tmproot, Globals.finalroot])
                 if options.real_clean:
                     info("Cleaning downloads ...")
@@ -186,7 +200,7 @@ def main():
                     pkg.clean(real=options.real_clean)
             return
 
-        if options.packages == 'all':
+        if 'all' in options.packages:
             options.packages = packages
 
         pkgname = build_clients(options.packages)
