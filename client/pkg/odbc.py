@@ -3,14 +3,12 @@
 # Add the NuoDB ODBC client
 
 import os
-import re
 
-from client.exceptions import CommandError
+from client.exceptions import DownloadError
 from client.package import Package
 from client.stage import Stage
-from client.artifact import GitHubRepo
-from client.utils import Globals, rmdir, mkdir, which, run, runout
-
+from client.artifact import GitHubMetadata, Artifact
+from client.utils import Globals, rmdir, mkdir, unpack_file
 
 class ODBCPackage(Package):
     """Add the NuoDB ODBC client."""
@@ -19,119 +17,67 @@ class ODBCPackage(Package):
 
     __USER = 'nuodb'
     __REPO = 'nuodb-odbc'
-
-    # For now we just get the HEAD of the repo
-    __TAG = 'pds/updates'
+    __LX64 = 'linux.x86_64'
+    __WIN = 'win64'
 
     def __init__(self):
         super(ODBCPackage, self).__init__(self.__PKGNAME)
-        self._zip = None
+        self._file = None
 
         self.staged = [Stage('nuodbodbc',
                              title='NuoDB ODBC Driver',
                              requirements='NuoDB C++ Driver; either UnixODBC 2.3 or Windows')]
         self.stage = self.staged[0]
 
+    def _getext(self):
+        return self.__LX64 if Globals.target == 'lin64' else self.__WIN
+
     def prereqs(self):
         # We need nuodb to get the C++ driver
         return ['nuodb']
 
     def download(self):
-        nm = '{}/{}'.format(self.__USER, self.__REPO)
-        self._repo = GitHubRepo(self.__USER, self.__REPO, nm, self.__TAG)
-        self._repo.update()
+        repo = GitHubMetadata(self.__USER, self.__REPO)
+        self.setversion(repo.version)
 
-    def make(self):
-        nuodb = self.get_package('nuodb')
-        self.distdir = os.path.join(self.stage.basedir, 'dist')
-        self.homedir = nuodb.staged[0].basedir
+        ext = self._getext()
+        name = None
+        url = None
+        for asset in repo.metadata['assets']:
+            if ext in asset['name']:
+                if name:
+                    raise DownloadError("Multiple %s assets: %s, %s"
+                                        % (ext, name, asset['name']))
+                name = asset['name']
+                url = asset['browser_download_url']
+        if name is None:
+            raise DownloadError("Cannot locate %s asset" % (ext))
 
+        self._file = Artifact(self.name, name, url)
+        self._file.update()
+
+    def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        self.cmake = which('cmake')
-        if self.cmake is None:
-            raise CommandError("Cannot find cmake installed.")
-        args = [self.cmake, self._repo.path,
-                '-DCMAKE_BUILD_TYPE=RelWithDebInfo',
-                '-DNUODB_HOME={}'.format(self.homedir)]
-        args.append('-DCMAKE_INSTALL_PREFIX={}'.format(self.distdir))
-
-        if not Globals.iswindows:
-            incpath = os.environ.get('ODBC_INCLUDE')
-            if incpath is None and Globals.thirdparty_common:
-                incpath = os.path.join(Globals.thirdparty_common, 'unixODBC', 'include')
-            if incpath:
-                args.append('-DODBC_INCLUDE={}'.format(incpath))
-            libpath = os.environ.get('ODBC_LIB')
-            if libpath is None and Globals.thirdparty_arch:
-                libpath = os.path.join(Globals.thirdparty_arch, 'unixODBC', 'lib')
-            if libpath:
-                args.append('-DODBC_LIB={}'.format(libpath))
-
-        if Globals.cc:
-            args.append('-DCMAKE_C_COMPILER={}'.format(Globals.cc))
-        if Globals.cxx:
-            args.append('-DCMAKE_CXX_COMPILER={}'.format(Globals.cxx))
-
-        run(args, cwd=self.pkgroot)
-        run([self.cmake, '--build', '.', '--target', 'install'], cwd=self.pkgroot)
-
-    def test(self):
-        reports = os.path.join(self.stage.basedir, 'test-reports')
-        rmdir(reports)
-        admin = os.path.join(self.homedir, 'etc', 'nuoadmin')
-        nuocmd = os.path.join(self.homedir, 'bin', 'nuocmd')
-        if Globals.iswindows:
-            admin += '.bat'
-            nuocmd += '.bat'
-
-        os.environ['PATH'] = (os.path.join(self.homedir, 'bin')
-                              + os.pathsep + os.environ['PATH'])
-
-        # Disable TLS and start an AP
-        run([admin, 'tls', 'disable'])
-        run([admin, 'start'])
-        os.environ.pop('NUOCMD_CLIENT_KEY', None)
-        os.environ.pop('NUOCMD_VERIFY_SERVER', None)
-        try:
-            tscript = os.path.join(self._repo.path, 'etc', 'runtests')
-            tscript += '.bat' if Globals.iswindows else '.sh'
-            tbin = os.path.join(self.stage.basedir, 'test', 'NuoODBCTest')
-            run([tscript, self.distdir, tbin,
-                 '--gtest_output=xml:{}'.format(os.path.join(reports, 'NuoODBCTest-results.xml'))])
-        except Exception:
-            run([nuocmd, 'shutdown', 'database', '--db-name', 'NuoODBCTestDB'])
-            run([nuocmd, 'check', 'database', '--db-name', 'NuoODBCTestDB',
-                 '--num-processes', '0', '--timeout', '30'])
-            raise
-        finally:
-            try:
-                run([admin, 'stop'])
-            finally:
-                run([admin, 'tls', 'enable'])
+        unpack_file(self._file.path, self.pkgroot)
 
     def install(self):
-        # Once we've configured/built we can determine the version
-        verfile = os.path.join(self.stage.basedir, 'src', 'ProductVersion.h')
-        ver = {}
-        with open(verfile, 'r') as f:
-            for ln in f.readlines():
-                m = re.match(r'\s*#\s*define\s+NUOODBC_VERSION_([^\s]+)\s+(\d+)', ln)
-                if m:
-                    ver[m.group(1)] = m.group(2)
-        if len(ver) != 3:
-            raise CommandError("Version info not found in {}".format(verfile))
-        verstr = '{}.{}.{}'.format(ver['MAJOR'], ver['MINOR'], ver['MAINT'])
-        self.setversion(verstr)
-
-        if Globals.iswindows:
-            self.stage.stagefiles('lib', os.path.join(self.distdir, 'lib'),
-                                  ['NuoODBC.lib'])
-            self.stage.stagefiles('bin', os.path.join(self.distdir, 'bin'),
-                                  ['NuoODBC.dll', 'NuoODBC.pdb'])
-        else:
-            self.stage.stagefiles('lib64', os.path.join(self.distdir, 'lib64'),
+        dirname = 'nuodbodbc-%s.%s' % (self.stage.version, self._getext())
+        nuodb = self.get_package('nuodb')
+        root = os.path.join(self.pkgroot, dirname)
+        if Globals.target == 'lin64':
+            self.stage.stagefiles('lib64', os.path.join(root, 'lib64'),
                                   ['libNuoODBC.so'])
+            self.stage.stage('lib64', nuodb.stgs['nuoremote'].getstaged('lib64'))
+        else:
+            self.stage.stagefiles('lib', os.path.join(root, 'lib'),
+                                  ['NuoODBC.lib'])
+            bindir = os.path.join(root, 'bin')
+            self.stage.stagefiles('bin', bindir, ['NuoODBC.dll', 'NuoODBC.pdb'])
+            self.stage.stage('bin', nuodb.stgs['nuoremote'].getstaged('bin'),
+                             ignore=lambda dst, lst: [f for f in lst if f.endswith('.pdb')])
+
+        self.stage.stage('etc', [os.path.join(root, 'etc/')])
 
 
 # Create and register this package
