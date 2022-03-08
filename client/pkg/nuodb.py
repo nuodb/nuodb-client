@@ -4,7 +4,7 @@
 
 import os
 
-from client.exceptions import DownloadError
+from client.exceptions import DownloadError, UnpackError
 from client.package import Package
 from client.stage import Stage
 from client.artifact import Artifact
@@ -41,12 +41,12 @@ class NuoDBPackage(Package):
                               title='nuodbmgr',
                               requirements='Java 8 or 11'),
 
-            'nuoremote': Stage('nuoremote',
-                               title='C++ Driver',
-                               requirements='GNU/Linux or Windows'),
-
             'nuoclient': Stage('nuoclient',
                                title='C Driver',
+                               requirements='GNU/Linux or Windows'),
+
+            'nuoremote': Stage('nuoremote',
+                               title='C++ Driver',
                                requirements='GNU/Linux or Windows')
         }
 
@@ -89,6 +89,8 @@ class NuoDBPackage(Package):
         mkdir(self.pkgroot)
         unpack_file(self._pkg.path, self.pkgroot)
         udir = os.path.join(self.pkgroot, self._dirname)
+        if not os.path.exists(udir):
+            raise UnpackError("Unpack did not create %s" % (udir))
 
         # Newer versions of NuoDB don't ship nuodbmanager any longer
         if not os.path.exists(os.path.join(udir, 'jar', 'nuodbmanager.jar')):
@@ -103,13 +105,17 @@ class NuoDBPackage(Package):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql'])
         self.stgs['nuoloader'].stagefiles('bin', 'bin', ['nuoloader'])
 
-        self.stgs['nuoremote'].stagefiles('lib64', 'lib64', ['libNuoRemote.so'])
         self.stgs['nuoclient'].stagefiles('lib64', 'lib64', ['libnuoclient.so'])
 
         # Add in shared libraries for packages that need it
         soglobs = ['libicu*.so.*', 'libmpir.so.*']
-        for stg in ['nuosql', 'nuoloader', 'nuoremote', 'nuoclient']:
+        for stg in ['nuosql', 'nuoloader', 'nuoclient']:
             self.stgs[stg].stagefiles('lib64', 'lib64', soglobs)
+
+        # C++ driver depends on the C driver
+        self.stgs['nuoremote'].stagefiles('lib64', 'lib64', ['libNuoRemote.so'])
+        self.stgs['nuoremote'].stage('lib64',
+                                     self.stgs['nuoclient'].getstaged('lib64'))
 
         if 'nuodbmgr' in self.stgs:
             self.stgs['nuodbmgr'].stagefiles('jar', 'jar', ['nuodbmanager.jar'])
@@ -121,15 +127,21 @@ class NuoDBPackage(Package):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql.exe'])
         self.stgs['nuoloader'].stagefiles('bin', 'bin', ['nuoloader.exe'])
 
-        self.stgs['nuoremote'].stagefiles('bin', 'bin', ['NuoRemote.dll', 'NuoRemote.pdb'])
-        self.stgs['nuoremote'].stagefiles('lib', 'lib', ['NuoRemote.lib'])
         self.stgs['nuoclient'].stagefiles('bin', 'bin', ['nuoclient.dll', 'nuoclient.pdb'])
         self.stgs['nuoclient'].stagefiles('lib', 'lib', ['nuoclient.lib'])
 
         # Add in shared libraries for packages that need it
         soglobs = ['icu*.dll', 'mpir*.dll', 'msvcp140.dll', 'vcruntime140.dll']
-        for stg in ['nuosql', 'nuoloader', 'nuoremote', 'nuoclient']:
+        for stg in ['nuosql', 'nuoloader', 'nuoclient']:
             self.stgs[stg].stagefiles('bin', 'bin', soglobs)
+
+        # C++ driver depends on the C driver
+        self.stgs['nuoremote'].stagefiles('lib', 'lib', ['NuoRemote.lib'])
+        self.stgs['nuoremote'].stagefiles('bin', 'bin',
+                                          ['NuoRemote.dll', 'NuoRemote.pdb'])
+        self.stgs['nuoremote'].stage(
+            'bin', self.stgs['nuoclient'].getstaged('bin'),
+            ignore=lambda dst, lst: [f for f in lst if f.endswith('.pdb')])
 
         if 'nuodbmgr' in self.stgs:
             self.stgs['nuodbmgr'].stagefiles('jar', 'jar', ['nuodbmanager.jar'])
@@ -143,12 +155,12 @@ class NuoDBPackage(Package):
             self._install_windows()
 
         # Install header and sample files for C/C++ drivers
+        self.stgs['nuoclient'].stagefiles('include', 'include', ['nuodb'])
+        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'doc', 'c')])
         self.stgs['nuoremote'].stagefiles('include', 'include',
                                           ['NuoDB.h', 'SQLException.h',
                                            'SQLExceptionConstants.h', 'NuoRemote'])
         self.stgs['nuoremote'].stage('samples', [os.path.join('samples', 'doc', 'cpp')])
-        self.stgs['nuoclient'].stagefiles('include', 'include', ['nuodb'])
-        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'doc', 'c')])
 
         for stg in self.staged:
             stg.stage('doc', ['README.txt', 'license.txt', 'ce_license.txt'])
