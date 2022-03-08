@@ -60,6 +60,23 @@ class Stage(object):
     def stagefiles(self, dest, src, files, ignore=None):
         self._staged.append((dest, [os.path.join(src, f) for f in files], ignore))
 
+    def getstaged(self, dest):
+        ret = []
+        def cvt(fnm):
+            if os.path.isabs(fnm):
+                return fnm
+            return os.path.join(self.stagedir, fnm)
+        for d, lst, ign in self._staged:
+            if d == dest:
+                if ign is None:
+                    ignored = []
+                else:
+                    ignored = ign(d, lst)
+                for ll in lst:
+                    if ll not in ignored:
+                        ret.append(cvt(ll))
+        return ret
+
     def clean(self):
         rmfile(self.stagefile)
         rmdir(self.stagedir)
