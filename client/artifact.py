@@ -1,8 +1,6 @@
 # (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
-
-"""
-Manage artifacts used to create the client package.
-"""
+#
+# Manage artifacts used to create the client package.
 
 import os
 import hashlib
@@ -62,7 +60,9 @@ def _getremotedata(url):
 
 class GitHubMetadata(object):
     """Retrieve the metadata for a GitHub release.
-       metadata is a JSON object."""
+
+    Metadata is a JSON object.
+    """
 
     __METAURL = 'https://api.github.com/repos/{}/{}/releases/latest'
 
@@ -80,7 +80,9 @@ class GitHubMetadata(object):
 
 class PyPIMetadata(object):
     """Retrieve the metadata for a PyPI project.
-       metadata is a JSON object."""
+
+    Metadata is a JSON object.
+    """
 
     __METAURL = 'https://pypi.org/pypi/{}/json'
 
@@ -105,7 +107,9 @@ class PyPIMetadata(object):
 
 class MavenMetadata(object):
     """Retrieve the metadata for a Maven repository.
-       metadata is an XML (ElementTree) object."""
+
+    Metadata is an XML (ElementTree) object.
+    """
 
     __BASEURL = 'https://repo1.maven.org/maven2/{}'
     __METAFILE = 'maven-metadata.xml'
@@ -120,6 +124,7 @@ class MavenMetadata(object):
 
 class BaseArtifact(object):
     """Base artifact class."""
+
     def __init__(self, pkg, local):
         self._pkg = pkg
         self._local = local
@@ -148,6 +153,7 @@ class Artifact(BaseArtifact):
         self._chksum = chksum
 
     def get(self):
+        """Retrieve the artifact into its destination location."""
         mkdir(os.path.dirname(self.path))
         rmfile(self.path)
 
@@ -156,6 +162,7 @@ class Artifact(BaseArtifact):
             local.write(data)
 
     def validate(self):
+        """Validate the artifact's hash."""
         if not super(Artifact, self).validate():
             return False
 
@@ -203,12 +210,17 @@ class GitClone(BaseArtifact):
         run([self._git, 'clone', '--recursive', self.url, self.path])
 
     def get(self):
+        """Retrieve the artifact into its destination location."""
         if not self._exists():
             self.update()
         self._run('checkout', '-f', self._ref)
         self._run('submodule', 'update', '--recursive')
 
     def update(self):
+        """Get the artifact if it's not already available.
+
+        Bring the Git repository fully up to date and check out the SHA.
+        """
         if not self._exists():
             self._clone()
             return
