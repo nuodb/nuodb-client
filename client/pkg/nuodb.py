@@ -47,7 +47,10 @@ class NuoDBPackage(Package):
 
             'nuoremote': Stage('nuoremote',
                                title='C++ Driver',
-                               requirements='GNU/Linux or Windows')
+                               requirements='GNU/Linux or Windows'),
+            'nuodump': Stage('nuodump',
+                             title='NuoDB Logical Backup Tool',
+                             requirements='GNU/Linux or Windows')
         }
 
         self.staged = self.stgs.values()
@@ -103,13 +106,14 @@ class NuoDBPackage(Package):
 
     def _install_linux(self):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql'])
+        self.stgs['nuodump'].stagefiles('bin', 'bin', ['nuodump'])
         self.stgs['nuoloader'].stagefiles('bin', 'bin', ['nuoloader'])
 
         self.stgs['nuoclient'].stagefiles('lib64', 'lib64', ['libnuoclient.so'])
 
         # Add in shared libraries for packages that need it
         soglobs = ['libicu*.so.*', 'libmpir.so.*']
-        for stg in ['nuosql', 'nuoloader', 'nuoclient']:
+        for stg in ['nuosql', 'nuodump', 'nuoloader', 'nuoclient']:
             self.stgs[stg].stagefiles('lib64', 'lib64', soglobs)
 
         # C++ driver depends on the C driver
@@ -125,6 +129,7 @@ class NuoDBPackage(Package):
 
     def _install_windows(self):
         self.stgs['nuosql'].stagefiles('bin', 'bin', ['nuosql.exe'])
+        self.stgs['nuodump'].stagefiles('bin', 'bin', ['nuodump.exe'])
         self.stgs['nuoloader'].stagefiles('bin', 'bin', ['nuoloader.exe'])
 
         self.stgs['nuoclient'].stagefiles('bin', 'bin', ['nuoclient.dll', 'nuoclient.pdb'])
@@ -132,7 +137,7 @@ class NuoDBPackage(Package):
 
         # Add in shared libraries for packages that need it
         soglobs = ['icu*.dll', 'mpir*.dll', 'msvcp140.dll', 'vcruntime140.dll']
-        for stg in ['nuosql', 'nuoloader', 'nuoclient']:
+        for stg in ['nuosql', 'nuodump', 'nuoloader', 'nuoclient']:
             self.stgs[stg].stagefiles('bin', 'bin', soglobs)
 
         # C++ driver depends on the C driver
