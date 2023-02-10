@@ -167,6 +167,11 @@ class NuoDBPackage(Package):
                                            'SQLExceptionConstants.h', 'NuoRemote'])
         self.stgs['nuoremote'].stage('samples', [os.path.join('samples', 'doc', 'cpp')])
 
+        # Include Quickstart Hockey SQL sample files to be used in training sessions
+        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'nuoadmin-quickstart')])
+        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'quickstart')])
+        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'quickstart.py')])
+
         for stg in self.staged:
             stg.stage('doc', ['README.txt', 'license.txt', 'ce_license.txt'])
 
