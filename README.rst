@@ -8,31 +8,29 @@ NuoDB Client Package
 .. contents::
 
 The NuoDB Client Package bundles the latest publicly-available NuoDB_ database client verions into a single downloadable
-file. The official versions of the NuoDB Client Package file are available from the NuoDB `GitHub Releases`_ page and from the
-NuoDB `Community Edition`_ webpage.
+file. The official versions of the NuoDB Client Package file are available from the NuoDB `GitHub Releases`_ page.
 
-You can use this project to create a package containing customized sets of NuoDB
-Client packages.
+You can also use this project to create a package containing customized sets of NuoDB Client packages.
 
 Requirements
 ------------
 
-Each client in the NuoDB Client Package will have different requirements when connecting to a NuoDB database. System requirements
-for running the NuoDB database can be found on the NuoDB documentation `System Requirements`_ page.
+Each client in the NuoDB Client Package will have different requirements when connecting to a NuoDB database. The System
+requirements for running the NuoDB database are found in the NuoDB documentation `System Requirements`_ page.
 
-+------------------+-----------------------------------+
-|Utility           | Requirements                      |
-+==================+===================================+
-|nuosql            |GNU/Linux or Windows               |
-+------------------+-----------------------------------+
-|nuoloader         |GNU/Linux or Windows               |
-+------------------+-----------------------------------+
-|nuodb-migrator    |Java 8 or 11                       |
-+------------------+-----------------------------------+
-|nuocmd            |Python 2 with *requests* installed |
-+------------------+-----------------------------------+
-|nuodbmgr          |Java 8 or 11                       |
-+------------------+-----------------------------------+
++------------------+----------------------------------------+
+|Utility           | Requirements                           |
++==================+========================================+
+|nuosql            |GNU/Linux or Windows                    |
++------------------+----------------------------------------+
+|nuoloader         |GNU/Linux or Windows                    |
++------------------+----------------------------------------+
+|nuodb-migrator    |Java 8 or 11                            |
++------------------+----------------------------------------+
+|nuocmd            |Python 2.7 or 3.6                       |
++------------------+----------------------------------------+
+|nuodbmgr          |Java 8 or 11                            |
++------------------+----------------------------------------+
 
 Also included are SQL drivers:
 
@@ -47,16 +45,15 @@ Also included are SQL drivers:
 +------------------+---------------------+
 |JDBC              |Java 8 or 11         |
 +------------------+---------------------+
-|Hibernate3        |Java 8 or 11         |
-+------------------+---------------------+
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
 
-The use of the clients require a running NuoDB database.  If you don't have a NuoDB_ database running in your environment yet,
-you can use the NuoDB `Community Edition`_ page to guide you through the steps to deploy a NuoDB database.
+The use of the NuoDB clients and the drivers in this package require a running NuoDB database.  If you don't have a 
+NuoDB_ database running in your environment, refer to the NuoDB Documentation_ to guide you through the steps to
+deploy a NuoDB database.
 
-Installation
-------------
+Client Package Installation
+---------------------------
 
 Unpack the tar file, or unzip the zip file which will create a *nuodb-client-<ver>* directory that contains the NuoDB Client
 Package files.
@@ -76,6 +73,5 @@ NuoDB Client is licensed under the `BSD 3-Clause License <https://github.com/nuo
 
 .. _NuoDB: https://www.nuodb.com/
 .. _GitHub Releases: https://github.com/nuodb/nuodb-client/releases
-.. _Community Edition: https://www.nuodb.com/dev-center/community-edition-download
-.. _System Requirements: https://doc.nuodb.com/Latest/Default.htm#System-Requirements.htm
-.. _Documentation: https://doc.nuodb.com/Latest/Default.htm
+.. _System Requirements: https://doc.nuodb.com/nuodb/latest/deployment-models/physical-or-vmware-environments-with-nuodb-admin/system-requirements/
+.. _Documentation: https://doc.nuodb.com/nuodb/latest/introduction-to-nuodb/
