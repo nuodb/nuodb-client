@@ -111,6 +111,9 @@ class NuoDBPackage(Package):
 
         self.stgs['nuoclient'].stagefiles('lib64', 'lib64', ['libnuoclient.so'])
 
+        # Include linux quickstart script
+        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'nuoadmin-quickstart')])
+
         # Add in shared libraries for packages that need it
         soglobs = ['libicu*.so.*', 'libmpir.so.*']
         for stg in ['nuosql', 'nuodump', 'nuoloader', 'nuoclient']:
@@ -134,6 +137,9 @@ class NuoDBPackage(Package):
 
         self.stgs['nuoclient'].stagefiles('bin', 'bin', ['nuoclient.dll', 'nuoclient.pdb'])
         self.stgs['nuoclient'].stagefiles('lib', 'lib', ['nuoclient.lib'])
+
+        # Include windows quickstart script
+        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'nuoadmin-quickstart.bat')])
 
         # Add in shared libraries for packages that need it
         soglobs = ['icu*.dll', 'mpir*.dll', 'msvcp140.dll', 'vcruntime140.dll']
@@ -167,8 +173,7 @@ class NuoDBPackage(Package):
                                            'SQLExceptionConstants.h', 'NuoRemote'])
         self.stgs['nuoremote'].stage('samples', [os.path.join('samples', 'doc', 'cpp')])
 
-        # Include Quickstart Hockey SQL sample files to be used in training sessions
-        self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'nuoadmin-quickstart')])
+        # Include common Quickstart Hockey SQL sample files to be used in training sessions
         self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'quickstart')])
         self.stgs['nuoclient'].stage('samples', [os.path.join('samples', 'quickstart.py')])
 
