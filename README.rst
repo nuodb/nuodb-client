@@ -27,7 +27,7 @@ requirements for running the NuoDB database are found in the NuoDB documentation
 +------------------+----------------------------------------+
 |nuodb-migrator    |Java 8 or 11                            |
 +------------------+----------------------------------------+
-|nuocmd            |Python 2.7 or 3.6                       |
+|nuocmd            |Python 3.6 or later                     |
 +------------------+----------------------------------------+
 |nuodbmgr          |Java 8 or 11                            |
 +------------------+----------------------------------------+
