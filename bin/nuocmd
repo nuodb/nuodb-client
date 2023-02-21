@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 
 # Unfortunately, ksh93 defines builtin aliases even when run non-interactively.
 unalias -a
@@ -11,13 +11,13 @@ die () { echo "$*"; exit 1; }
 CMD=${0##*/}
 DIR=$(cd "${0%$CMD}." && pwd)
 
-# Find Python2
+# Find Python
 _python=${NUOPYTHON:-$PYTHON}
 if test -z "$_python"; then
-    _python=$(command -v python2.7) \
-        || _python=$(command -v python2) \
+    # Prefer Python 3 (but Python 2 works)
+    _python=$(command -v python3) \
         || _python=$(command -v python) \
-        || die "Python2 must be installed"
+        || die "Python must be installed"
 fi
 
 # Find the pynuoadmin installation

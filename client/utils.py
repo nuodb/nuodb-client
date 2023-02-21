@@ -7,6 +7,7 @@ __all__ = ['Globals', 'info', 'verbose', 'error',
            'which', 'runcmd', 'run', 'runout', 'pipinstall']
 
 import os
+import errno
 import re
 import shutil
 import signal
@@ -152,7 +153,7 @@ def mkdir(newpath):
     try:
         os.makedirs(newpath)
     except OSError as ex:
-        if ex.errno != os.errno.EEXIST:
+        if ex.errno != errno.EEXIST:
             raise
 
 
@@ -417,11 +418,18 @@ def runout(args, **kwargs):
     try:
         proc = runcmd(args, **kwargs)
         (out, err) = proc.communicate()
-        return (proc.wait(), out, err)
+        return (proc.wait(), out.decode("utf-8"), err.decode("utf-8"))
     except Exception as ex:
         return (1, '', str(ex))
 
 
 def pipinstall(pkgname, pkgroot):
-    # Use pip to install a package and its prerequisites
-    run([Globals.python, '-m', 'pip', 'install', '-t', pkgroot, pkgname])
+    # Use pip to install a package and its prerequisites.  We prefer
+    # Python 2, for now, if we have it: this ensures that the result can
+    # be invoked by either Python 2 or Python 3.
+    for py in ['nuopython', 'python2', 'python']:
+        if which(py) is not None:
+            break
+    else:
+        py = Globals.python
+    run([py, '-m', 'pip', 'install', '-t', pkgroot, pkgname])

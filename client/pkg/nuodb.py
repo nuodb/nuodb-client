@@ -53,7 +53,7 @@ class NuoDBPackage(Package):
                              requirements='GNU/Linux or Windows')
         }
 
-        self.staged = self.stgs.values()
+        self.staged = list(self.stgs.values())
 
     def download(self):
         versions = Artifact(self.name, self.__VERSIONS,
