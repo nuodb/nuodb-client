@@ -81,7 +81,7 @@ This pulls the latest version available from PyPI.
         self.stage.stage('bin', [os.path.join(Globals.bindir, 'nuocmd')])
         self.stage.stagefiles('etc', os.path.join(nuodb.staged[0].basedir, 'etc'), ['run-java-app.sh', 'nuokeymgr'])
 
-        if Globals.target == 'win64':
+        if Globals.target.startswith('win'):
             self.stage.stage('bin', [os.path.join(Globals.bindir, 'nuocmd.bat')])
             self.stage.stagefiles('etc', os.path.join(nuodb.staged[0].basedir, 'etc'), ['nuokeymgr.bat'])
 

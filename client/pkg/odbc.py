@@ -18,6 +18,7 @@ class ODBCPackage(Package):
     __USER = 'nuodb'
     __REPO = 'nuodb-odbc'
     __LX64 = 'linux.x86_64'
+    __LARM64 = 'linux.arm64'
     __WIN = 'win64'
 
     def __init__(self):
@@ -30,7 +31,12 @@ class ODBCPackage(Package):
         self.stage = self.staged[0]
 
     def _getext(self):
-        return self.__LX64 if Globals.target == 'lin64' else self.__WIN
+        if Globals.target == 'lin-x64':
+            return self.__LX64
+        if Globals.target == 'lin-arm64':
+            return self.__LARM64
+        else:
+            return self.__WIN
 
     def prereqs(self):
         # We need nuodb to get the C++ driver
@@ -65,7 +71,7 @@ class ODBCPackage(Package):
         dirname = 'nuodbodbc-%s.%s' % (self.stage.version, self._getext())
         nuodb = self.get_package('nuodb')
         root = os.path.join(self.pkgroot, dirname)
-        if Globals.target == 'lin64':
+        if Globals.target.startswith('lin'):
             self.stage.stagefiles('lib64', os.path.join(root, 'lib64'),
                                   ['libNuoODBC.so'])
             self.stage.stage('lib64', nuodb.stgs['nuoremote'].getstaged('lib64'))

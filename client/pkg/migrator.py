@@ -41,7 +41,7 @@ class MigratorPackage(Package):
     def install(self):
         self.stage.stage('jar', ['jar/'])
         self.stage.stage('conf', ['conf/'])
-        ext = '' if Globals.target == 'lin64' else '.bat'
+        ext = '.bat' if Globals.target.startswith('win') else ''
         self.stage.stagefiles('bin', 'bin', ['nuodb-migrator'+ext])
 
 

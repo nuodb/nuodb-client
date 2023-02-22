@@ -18,7 +18,8 @@ class NuoDBPackage(Package):
 
     __NUODB_URL = 'https://ce-downloads.nuohub.org'
     __VERSIONS = 'supportedversions.txt'
-    __TARFORMAT = 'nuodb-{}.linux.x86_64'
+    __LINX64FORMAT = 'nuodb-{}.linux.x86_64'
+    __LINARM64FORMAT = 'nuodb-{}.linux.arm64'
     __TAREXT = '.tar.gz'
     __ZIPFORMAT = 'nuodb-{}.win64'
     __ZIPEXT = '.zip'
@@ -63,8 +64,11 @@ class NuoDBPackage(Package):
         version = loadfile(versions.path).split()[-1]
         self.setversion(version)
 
-        if Globals.target == 'lin64':
-            fmt = self.__TARFORMAT
+        if Globals.target == 'lin-x64':
+            fmt = self.__LINX64FORMAT
+            ext = self.__TAREXT
+        elif Globals.target == 'lin-arm64':
+            fmt = self.__LINARM64FORMAT
             ext = self.__TAREXT
         else:
             fmt = self.__ZIPFORMAT
@@ -160,7 +164,7 @@ class NuoDBPackage(Package):
             self.stgs['nuodbmgr'].stage('bin', [os.path.join(Globals.bindir, 'nuodbmgr.bat')])
 
     def install(self):
-        if Globals.target == 'lin64':
+        if Globals.target.startswith('lin'):
             self._install_linux()
         else:
             self._install_windows()

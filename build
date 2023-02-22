@@ -90,7 +90,7 @@ Contents:
 
     etc = os.path.join(pkgdir, 'etc')
     mkdir(etc)
-    if Globals.target == 'lin64':
+    if Globals.target.startswith('lin'):
         copyfiles(['nuodb_setup.sh'], Globals.etcdir, etc)
     else:
         copyfiles(['nuodb_setup.bat'], Globals.etcdir, etc)
@@ -99,7 +99,7 @@ Contents:
 
 
 def create_package(pkgname):
-    if Globals.target == 'lin64':
+    if Globals.target.startswith('lin'):
         out = '{}.tar.gz'.format(pkgname)
         rmfile(out)
         info("Creating {} ...".format(out))
@@ -134,8 +134,8 @@ def main():
     parser.add_argument(
         "-p",
         "--platform",
-        default='lin64',
-        choices=['lin64', 'win64'],
+        default='lin-x64',
+        choices=['lin-x64', 'lin-arm64', 'win-x64'],
         help="Client platform")
 
     parser.add_argument(
