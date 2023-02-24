@@ -41,5 +41,5 @@ if not exist "%pkghome%\%cli%" (
 )
 
 :run
-set "PYTHONPATH=%pgkhome%;%PYTHONPATH%"
+set "PYTHONPATH=%pkghome%"
 "%pycmd%" -m pynuoadmin.nuodb_cli %*
