@@ -40,7 +40,7 @@ This pulls the latest version available from PyPI.
 
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        pipinstall('%s[completion,crypto]==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
+        pipinstall('%s[completion]==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
 
     def install(self):
         nopyc = shutil.ignore_patterns('*.pyc', '*.pyo')

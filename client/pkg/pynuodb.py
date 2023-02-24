@@ -32,7 +32,7 @@ class PyNuodbPackage(Package):
 
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        pipinstall('%s[crypto]==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
+        pipinstall('%s==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
 
     def install(self):
         files = os.listdir(self.pkgroot)
