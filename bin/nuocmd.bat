@@ -2,6 +2,8 @@
 REM -- Invoke the NuoDB Admin command-line tool
 REM (C) Copyright 2019-2023 NuoDB, Inc.  All Rights Reserved.
 
+setlocal
+
 if "%NUOPYTHON%" == "" goto trypyvar
 set "pycmd=%NUOPYTHON%"
 goto getpkg
@@ -41,5 +43,5 @@ if not exist "%pkghome%\%cli%" (
 )
 
 :run
-set "PYTHONPATH=%pkghome%"
+set "PYTHONPATH=%pkghome%;%PYTHONPATH%"
 "%pycmd%" -m pynuoadmin.nuodb_cli %*
