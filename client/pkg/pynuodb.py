@@ -22,7 +22,11 @@ class PyNuodbPackage(Package):
 
         self.staged = [Stage(self.__PKGNAME,
                              title='Python Driver',
-                             requirements='Python 2 or 3')]
+                             requirements='Python 2 or 3',
+                             notes="""
+    For improved performance, install the Python cryptography package:
+        python -m pip install cryptography
+""")]
         # There's only one, make it simple
         self.stage = self.staged[0]
 

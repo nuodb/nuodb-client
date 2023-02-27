@@ -63,17 +63,22 @@ def build_clients(packages):
     packages = []
     for stg in sorted(staged, key=lambda x: x.title):
         manifest.append('  * {} version {}'.format(stg.title, stg.version))
+        if stg.notes is None:
+            notes = ''
+        else:
+            notes = '\nNotes:{}'.format(stg.notes)
         packages.append("""{}
 {}
 
 Version: {}
-Requirements: {}
+Requirements: {}{}
 
 Contents:
   {}""".format(stg.title,
                '-'*len(stg.title),
                stg.version,
                stg.requirements,
+               notes,
                '\n  '.join(sorted(stg.getcontents()))))
 
     # Construct the various values for the README file
