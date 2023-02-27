@@ -7,10 +7,13 @@ NuoDB Client Package
 
 .. contents::
 
-The NuoDB Client Package bundles the latest publicly-available NuoDB_ database client verions into a single downloadable
-file. The official versions of the NuoDB Client Package file are available from the NuoDB `GitHub Releases`_ page.
+The NuoDB Client Package bundles the latest publicly-available NuoDB_ database
+client versions into a single downloadable file. The official versions of the
+NuoDB Client Package file are available from the NuoDB `GitHub Releases`_
+page.
 
-You can also use this project to create a package containing customized sets of NuoDB Client packages.
+You can also use this project to create a package containing customized sets
+of NuoDB Client packages.
 
 Requirements
 ------------
