@@ -15,22 +15,23 @@ You can also use this project to create a package containing customized sets of 
 Requirements
 ------------
 
-Each client in the NuoDB Client Package will have different requirements when connecting to a NuoDB database. The System
-requirements for running the NuoDB database are found in the NuoDB documentation `System Requirements`_ page.
+Each client in the NuoDB Client Package will have different requirements when
+connecting to a NuoDB database. The System requirements for running the NuoDB
+database are found in the NuoDB documentation `System Requirements`_ page.
 
-+------------------+----------------------------------------+
-|Utility           | Requirements                           |
-+==================+========================================+
-|nuosql            |GNU/Linux or Windows                    |
-+------------------+----------------------------------------+
-|nuoloader         |GNU/Linux or Windows                    |
-+------------------+----------------------------------------+
-|nuodb-migrator    |Java 8 or 11                            |
-+------------------+----------------------------------------+
-|nuocmd            |Python 3.6 or later                     |
-+------------------+----------------------------------------+
-|nuodbmgr          |Java 8 or 11                            |
-+------------------+----------------------------------------+
++--------------------+----------------------------------------+
+|Utility             | Requirements                           |
++====================+========================================+
+|nuocmd / pynuoadmin |Python 3.6 or later                     |
++--------------------+----------------------------------------+
+|nuosql              |GNU/Linux or Windows                    |
++--------------------+----------------------------------------+
+|nuoloader           |GNU/Linux or Windows                    |
++--------------------+----------------------------------------+
+|nuodump             |GNU/Linux or Windows                    |
++--------------------+----------------------------------------+
+|nuodb-migrator      |Java 8 or 11                            |
++--------------------+----------------------------------------+
 
 Also included are SQL drivers:
 
@@ -47,19 +48,23 @@ Also included are SQL drivers:
 +------------------+---------------------+
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
+|Python            |Python 2 or 3        |
++------------------+---------------------+
 
-The use of the NuoDB clients and the drivers in this package require a running NuoDB database.  If you don't have a 
-NuoDB_ database running in your environment, refer to the NuoDB Documentation_ to guide you through the steps to
-deploy a NuoDB database.
+The use of the NuoDB clients and the drivers in this package require a running
+NuoDB database.  If you don't have a NuoDB_ database running in your
+environment, refer to the NuoDB Documentation_ to guide you through the steps
+to deploy a NuoDB database.
 
 Client Package Installation
 ---------------------------
 
-Unpack the tar file, or unzip the zip file which will create a *nuodb-client-<ver>* directory that contains the NuoDB Client
-Package files.
+Unpack the tar file, or unzip the zip file which will create a
+*nuodb-client-<ver>* directory that contains the NuoDB Client Package files.
 
-To use the drivers you may need to configure your user applications with the appropriate path settings to locate your 
-NuoDB Client package install directory at runtime.
+To use the drivers you may need to configure your user applications with the
+appropriate path settings to locate your NuoDB Client package install
+directory at runtime.
 
 Resources
 ---------
