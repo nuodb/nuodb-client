@@ -57,8 +57,10 @@ This pulls the latest version available from PyPI.
 
         # We want all the packages, but not bin / etc / et.al.
         files = os.listdir(self.pkgroot)
-        files.remove('bin')
-        files.remove('etc')
+        if 'bin' in files:
+            files.remove('bin')
+        if 'etc' in files:
+            files.remove('etc')
 
         site = os.path.join('etc', 'python', 'site-packages')
 

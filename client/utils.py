@@ -445,6 +445,5 @@ def pipinstall(pkgname, pkgroot):
         raise CommandError("Incorrect python intepreter version; want %d got %s:\n%s"
                            % (Globals.pythonversion, py, (out + err).rstrip()))
     run([py, '-m', 'pip', 'install', '--disable-pip-version-check',
-         '--no-python-version-warning', '--isolated', '--no-cache-dir',
-         '--no-input', '-t', pkgroot,
+         '--isolated', '--no-cache-dir', '--no-input', '-t', pkgroot,
          pkgname + '; python_version < "%d"' % (Globals.pythonversion+1)])
