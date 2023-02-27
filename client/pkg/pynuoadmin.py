@@ -26,7 +26,7 @@ This pulls the latest version available from PyPI.
 
         self.staged = [Stage(self.__PKGNAME,
                              title='NuoAdmin Driver',
-                             requirements='Python 2')]
+                             requirements='Python 3')]
 
         self.stage = self.staged[0]
 
@@ -40,6 +40,16 @@ This pulls the latest version available from PyPI.
 
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
+        if Globals.pythonversion < 3:
+            # Unfortunately the latest pathlib2 requires typing, which breaks
+            # p2<->p3 compatibility.  Force an older version.
+            # Double unfortunately, this doesn't work.  We pre-install the
+            # version we want, which SHOULD prevent pip from installing the
+            # newer version since this version is sufficient and the default
+            # upgrade strategy is "only-if-needed".  However, pip still
+            # decides to ALSO install pathlib2-2.3.7 so now there are TWO
+            # pathlib2 versions installed, and the "bad" one breaks things.
+            pipinstall('pathlib2 < 2.3.7', self.pkgroot)
         pipinstall('%s[completion]==%s' % (self.__PKGNAME, pypi.version), self.pkgroot)
 
     def install(self):

@@ -30,5 +30,11 @@ test -z "$_home" && test -f "${DIR%/*}/$_cli" \
     && _home="${DIR%/*}"
 test -n "$_home" || die "Cannot locate pynuoadmin installation"
 
+# This implementation requires Python 3
+case $("$_python" --version 2>&1) in
+    (*\ 3*) : ok ;;
+    (*) die "nuocmd requires Python 3 (found $_python)" ;;
+esac
+
 export PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$_home/$_pkgdir"
 exec "$_python" -m pynuoadmin.nuodb_cli "$@"

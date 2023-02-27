@@ -34,6 +34,8 @@ os.environ['COPYFILE_DISABLE'] = 'true'
 USER = 'nuodb'
 GROUP = 'nuodb'
 
+PYTHONVERSION = 3
+
 
 def build_clients(packages):
     version = datetime.now().strftime("%Y%m%d")
@@ -117,7 +119,8 @@ def create_package(pkgname):
 
 
 def main():
-    Globals.init(clientroot=os.path.dirname(os.path.realpath(__file__)))
+    Globals.init(clientroot=os.path.dirname(os.path.realpath(__file__)),
+                 pythonversion=PYTHONVERSION)
 
     # Get a list of possible packages
     packages = Package.get_packages()

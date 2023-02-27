@@ -25,6 +25,8 @@ class Globals(object):
     __NUO_ARCH = 'x86_64'
     __NUO_SYSROOT = 'rh75-linux-gnu'
 
+    pythonversion = None
+
     clientroot = None
     bindir = None
     etcdir = None
@@ -424,12 +426,25 @@ def runout(args, **kwargs):
 
 
 def pipinstall(pkgname, pkgroot):
-    # Use pip to install a package and its prerequisites.  We prefer
-    # Python 2, for now, if we have it: this ensures that the result can
-    # be invoked by either Python 2 or Python 3.
-    for py in ['nuopython', 'python2', 'python']:
+    # Use pip to install a package and its prerequisites.
+    if Globals.pythonversion == 2:
+        exes = ['nuopython', 'python2', 'python']
+    else:
+        exes = ['python3', 'python']
+    for py in exes:
         if which(py) is not None:
             break
     else:
         py = Globals.python
-    run([py, '-m', 'pip', 'install', '-t', pkgroot, pkgname])
+
+    (ret, out, err) = runout([py, '--version'])
+    if ret != 0:
+        raise CommandError("Invalid python interpreter: %s\n%s"
+                           % (py, (out + err).rstrip()))
+    if ' %d.' % (Globals.pythonversion) not in out+err:
+        raise CommandError("Incorrect python intepreter version; want %d got %s:\n%s"
+                           % (Globals.pythonversion, py, (out + err).rstrip()))
+    run([py, '-m', 'pip', 'install', '--disable-pip-version-check',
+         '--no-python-version-warning', '--isolated', '--no-cache-dir',
+         '--no-input', '-t', pkgroot,
+         pkgname + '; python_version < "%d"' % (Globals.pythonversion+1)])
