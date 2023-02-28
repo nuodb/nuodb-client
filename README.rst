@@ -51,7 +51,7 @@ Also included are SQL drivers:
 +------------------+---------------------+
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
-|Python            |Python 2 or 3        |
+|Python            |Python 3.6 or later  |
 +------------------+---------------------+
 
 The use of the NuoDB clients and the drivers in this package require a running
