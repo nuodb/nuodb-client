@@ -5,6 +5,48 @@
 Command-line tool for building the NuoDB client package.
 """
 
+# Package: Released (publicly downloadable) artifact (like nuodb)
+# Stage: Software within a package (like nuosql within nuodb)
+# Bundle: Convenience grouping of stages from 1 or more packages
+#
+# This tool produces one or more bundles that group together
+# stages as a convenience for users. Bundles group related stages
+# (like client tools or drivers) and all their dependencies into
+# a single tarball.
+#
+# Bundles are defined in the Bundles Enum in client.bundles.
+#
+# Package information describes how to download and unpack a
+# downloadable release. Packages are defined in client.pkg.*.
+# Every package defines at least one stage.
+#
+# Stages are defined in client.pkg.*. Each Stage is labeled
+# with a bundle when it is instantiated. A Stage's bundle determines
+# which tarball it ends up in.
+#
+# If you do not want to include a stage in a bundle explicitly,
+# set its bundle to None. A stage can still be pulled into a bundle
+# as a dependency, but it won't be put into a bundle otherwise.
+# A stage that is only pulled into a bundle as a dependency will
+# not be explicitly listed in the manifest.
+#
+# Every stage is labeled with a version, but currently we assume
+# that every stage in a package has the same version (the version
+# of the package).
+#
+# Bundles are versioned separately from any stage they contain.
+# You *must* specify a version to use for *every* bundle generated
+# in a single invocation of this build tool. A manifest will be
+# generated for each bundle, which will include the version of
+# each stage contained therein.
+#
+# By default all bundles are included in the same .tar.gz. The
+# manifest and README generators will use bundle information for
+# grouping stages together.
+#
+# To create one .tar.gz per bundle (.tar.gz name includes the
+# bundle name), pass the --separate-bundles option.
+
 import os
 import sys
 import argparse
@@ -12,6 +54,8 @@ import re
 
 from string import Template
 from datetime import datetime
+from collections import defaultdict
+from itertools import starmap
 
 from client.exceptions import ClientError
 from client.package import Package
@@ -36,40 +80,44 @@ GROUP = 'nuodb'
 
 PYTHONVERSION = 3
 
+DEFAULT_BUNDLE_NAME = 'tools'
 
-def build_clients(packages):
-    version = datetime.now().strftime("%Y%m%d")
-    buildid = Globals.buildid
-    (ret, out, err) = runout(['git', 'rev-parse', '--short=10', 'HEAD'])
-    commit = out if ret == 0 else 'UNK'
 
-    target = Globals.target
-    pkgname = 'nuodb-client-{}.{}'.format(version, target)
+def bundle_to_pkgname(bundle, target):
+    pkgname_template = 'nuodb-{}-{}.{}'
+    b = str(bundle) if Globals.separate_bundles else DEFAULT_BUNDLE_NAME
+    return pkgname_template.format(b, Globals.version, target)
 
-    # This is handled inside Package so it can deal with prerequisites etc.
-    Package.build_all(packages)
 
-    # Now construct the final package from all the individual dist directories
-    pkgdir = os.path.join(Globals.finalroot, pkgname)
-    rmdir(pkgdir)
-    mkdir(pkgdir)
-    staged = []
-    for pkgnm in packages:
-        pkg = Package.get_package(pkgnm)
-        info("Installing package {} ...".format(pkg.name))
-        for stg in pkg.staged:
-            staged.append(stg)
-            copyinto(stg.stagedir, pkgdir)
+def pkgname_to_pkgdir(pkgname):
+    return os.path.join(Globals.finalroot, pkgname)
 
-    manifest = []
-    packages = []
-    for stg in sorted(staged, key=lambda x: x.title):
-        manifest.append('  * {} version {}'.format(stg.title, stg.version))
+
+def build_readme(bundle_contents):
+    def stage_to_s(stg):
+        return '* {} version {} (bundled from: [{}]({}))'.format(
+            stg.title,
+            stg.version,
+            stg.repo_title,
+            stg.repo_url)
+    def bundle_to_s(title, stages):
+        return '### {}\n'.format(title) + '\n'.join(map(stage_to_s, stages))
+    readme = '\n\n'.join(starmap(bundle_to_s, bundle_contents.items())) + '\n'
+    savefile(os.path.join(Globals.finalroot, 'README.md'),
+             readme)
+
+
+def build_manifest(bundle_version, buildid, commit, pkgname, stages):
+    pkgdir = pkgname_to_pkgdir(pkgname)
+    stage_names = []
+    stage_notes = []
+    for stg in sorted(stages, key=lambda x: x.title):
+        stage_names.append('  * {} version {}'.format(stg.title, stg.version))
         if stg.notes is None:
             notes = ''
         else:
             notes = '\nNotes:{}'.format(stg.notes)
-        packages.append("""{}
+        stage_notes.append("""{}
 {}
 
 Version: {}
@@ -84,16 +132,66 @@ Contents:
                '\n  '.join(sorted(stg.getcontents()))))
 
     # Construct the various values for the README file
-    replace = {'VERSION': version,
+    replace = {'VERSION': bundle_version,
                'BUILD': buildid,
                'COMMIT': commit,
                'LICENSE': Package.getlicense('3BSD'),
-               'MANIFEST': '\n'.join(manifest),
-               'PACKAGES': '\n\n'.join(packages)}
+               'MANIFEST': '\n'.join(stage_names),
+               'PACKAGES': '\n\n'.join(stage_notes)}
 
     readme = loadfile('README.in')
     savefile(os.path.join(pkgdir, 'README.txt'),
              Template(readme).substitute(replace))
+
+
+def build_clients(packages):
+    buildid = Globals.buildid
+    (ret, out, err) = runout(['git', 'rev-parse', '--short=10', 'HEAD'])
+    commit = out if ret == 0 else 'UNK'
+
+    target = Globals.target
+
+    # This is handled inside Package so it can deal with prerequisites etc.
+    Package.build_all(packages)
+
+    # Track all package names to return later
+    pkgnames = set()
+
+    # We want to recreate each pkgdir when it is first used
+    pkgdir_cleaned = set()
+    def clean_pkgdir(d):
+        if d in pkgdir_cleaned:
+            return
+        rmdir(d)
+        mkdir(d)
+        pkgdir_cleaned.add(d)
+
+    # Now construct the final package from all the individual dist directories
+    #
+    # tarball_contents is used to build the per tarball README / manifest
+    # bundle_contents is used to build the overall README / manifest for the release notes
+    #
+    # If --separate-packages is set, then tarball_contents and bundle_contents will contain the same contents
+    tarball_contents = defaultdict(list)
+    bundle_contents = defaultdict(list)
+    for pkgnm in packages:
+        pkg = Package.get_package(pkgnm)
+
+        info("Installing package {} ...".format(pkg.name))
+        for stg in pkg.staged:
+            if stg.bundle is None:
+                continue
+            pkgname = bundle_to_pkgname(stg.bundle, target)
+            pkgnames.add(pkgname)
+            pkgdir = pkgname_to_pkgdir(pkgname)
+            clean_pkgdir(pkgdir)
+            copyinto(stg.stagedir, pkgdir)
+            tarball_contents[pkgname].append(stg)
+            bundle_contents[stg.bundle['title']].append(stg)
+
+    for pkgname, stages in tarball_contents.items():
+        build_manifest(Globals.version, buildid, commit, pkgname, stages)
+    build_readme(bundle_contents)
 
     etc = os.path.join(pkgdir, 'etc')
     mkdir(etc)
@@ -102,7 +200,7 @@ Contents:
     else:
         copyfiles(['nuodb_setup.bat'], Globals.etcdir, etc)
 
-    return pkgname
+    return pkgnames
 
 
 def create_package(pkgname):
@@ -128,10 +226,8 @@ def main():
     parser = argparse.ArgumentParser(description='Build the NuoDB Client package')
 
     parser.add_argument(
-        "-i",
-        "--info",
-        action="store_true",
-        help="Show information about known client packages")
+        '--version',
+        help='Version to use for each bundle')
 
     parser.add_argument(
         "-v",
@@ -167,6 +263,11 @@ def main():
         help="Clean previous builds and downloads.")
 
     parser.add_argument(
+        '--separate-bundles',
+        action='store_true',
+        help='Create a separate .tar.gz per bundle.')
+
+    parser.add_argument(
         'packages',
         metavar='PKGS',
         nargs='*',
@@ -174,9 +275,11 @@ def main():
 
     options = parser.parse_args()
 
-    kwargs = {'isverbose': options.verbose,
+    kwargs = {'version': options.version,
+              'isverbose': options.verbose,
               'target': options.platform,
-              'buildid': options.build}
+              'buildid': options.build,
+              'separate_bundles': options.separate_bundles}
 
     for arg in list(options.packages):
         m = re.match(r'([^=]+)=([^\d].*)', arg)
@@ -208,13 +311,17 @@ def main():
                     pkg.clean(real=options.real_clean)
             return
 
+        if options.version is None:
+            parser.error('Must specify --version to build packages')
+
         if 'all' in options.packages:
             options.packages = packages
 
-        pkgname = build_clients(options.packages)
+        pkgnames = build_clients(options.packages)
 
         if not options.no_package:
-            create_package(pkgname)
+            for pkgname in pkgnames:
+                create_package(pkgname)
 
     except ClientError as ex:
         sys.exit("Failed: {}".format(str(ex)))

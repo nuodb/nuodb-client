@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Add the nuodb-python client
 
@@ -9,6 +9,7 @@ from client.artifact import PyPIMetadata
 from client.package import Package
 from client.stage import Stage
 from client.utils import rmdir, mkdir, pipinstall, getcontents
+from client.bundles import Bundles
 
 
 class PyNuodbPackage(Package):
@@ -21,8 +22,10 @@ class PyNuodbPackage(Package):
         self._file = None
 
         self.staged = [Stage(self.__PKGNAME,
-                             title='Python Driver',
+                             title='Python Driver (pynuodb)',
                              requirements='Python 2 or 3',
+                             bundle=Bundles.DRIVERS,
+                             package=self.__PKGNAME,
                              notes="""
     For improved performance, install the Python cryptography package:
         python -m pip install cryptography
@@ -32,6 +35,7 @@ class PyNuodbPackage(Package):
 
     def unpack(self):
         pypi = PyPIMetadata(self.__PKGNAME)
+        self.set_repo(pypi.friendlytitle, pypi.friendlyurl)
         self.setversion(pypi.version)
 
         rmdir(self.pkgroot)

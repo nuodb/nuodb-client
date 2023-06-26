@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Add the nuodb-migrator client
 
@@ -6,6 +6,7 @@ from client.package import Package
 from client.stage import Stage
 from client.artifact import GitHubMetadata, Artifact
 from client.utils import Globals, rmdir, mkdir, unpack_file
+from client.bundles import Bundles
 
 
 class MigratorPackage(Package):
@@ -22,12 +23,15 @@ class MigratorPackage(Package):
         self._zip = None
 
         self.staged = [Stage(self.__PKGNAME,
-                             title='NuoDB Migrator',
-                             requirements='Java 8 or 11')]
+                             title='NuoDB Migrator (nuodb-migrator)',
+                             requirements='Java 8 or 11',
+                             bundle=Bundles.CLI_TOOLS,
+                             package=self.__PKGNAME)]
         self.stage = self.staged[0]
 
     def download(self):
         repo = GitHubMetadata(self.__USER, self.__REPO)
+        self.set_repo(repo.friendlytitle, repo.friendlyurl)
         self.stage.version = repo.version
 
         self._zip = Artifact(self.name, self.__ZIP, repo.pkgurl)

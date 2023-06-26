@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2022  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2022-2023  All Rights Reserved.
 #
 # Add the NuoDB ODBC client
 
@@ -9,6 +9,8 @@ from client.package import Package
 from client.stage import Stage
 from client.artifact import GitHubMetadata, Artifact
 from client.utils import Globals, rmdir, mkdir, unpack_file
+from client.bundles import Bundles
+
 
 class ODBCPackage(Package):
     """Add the NuoDB ODBC client."""
@@ -27,7 +29,9 @@ class ODBCPackage(Package):
 
         self.staged = [Stage('nuodbodbc',
                              title='NuoDB ODBC Driver',
-                             requirements='NuoDB C++ Driver; either UnixODBC 2.3 or Windows')]
+                             requirements='NuoDB C++ Driver; either UnixODBC 2.3 or Windows',
+                             bundle=Bundles.DRIVERS,
+                             package=self.__PKGNAME)]
         self.stage = self.staged[0]
 
     def _getext(self):
@@ -44,6 +48,7 @@ class ODBCPackage(Package):
 
     def download(self):
         repo = GitHubMetadata(self.__USER, self.__REPO)
+        self.set_repo(repo.friendlytitle, repo.friendlyurl)
         self.setversion(repo.version)
 
         ext = self._getext()

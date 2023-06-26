@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019-2020  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Add the pynuoadmin client
 
@@ -9,6 +9,7 @@ from client.artifact import PyPIMetadata
 from client.package import Package
 from client.stage import Stage
 from client.utils import Globals, getcontents, rmdir, mkdir, pipinstall
+from client.bundles import Bundles
 
 
 class PyNuoadminPackage(Package):
@@ -25,8 +26,10 @@ This pulls the latest version available from PyPI.
         self._ac_file = None
 
         self.staged = [Stage(self.__PKGNAME,
-                             title='NuoAdmin Driver',
-                             requirements='Python 3')]
+                             title='NuoAdmin Driver (pynuoadmin)',
+                             requirements='Python 3',
+                             bundle=Bundles.DRIVERS,
+                             package=self.__PKGNAME)]
 
         self.stage = self.staged[0]
 
@@ -36,6 +39,7 @@ This pulls the latest version available from PyPI.
 
     def unpack(self):
         pypi = PyPIMetadata(self.__PKGNAME)
+        self.set_repo(pypi.friendlytitle, pypi.friendlyurl)
         self.setversion(pypi.version)
 
         rmdir(self.pkgroot)

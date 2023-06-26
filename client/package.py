@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Base class for creating a package in nuodb-client.
 # Each component in the client package should define a subclass of Package
@@ -95,6 +95,11 @@ class Package(object):
     def setversion(self, version):
         for stg in self.staged:
             stg.version = version
+
+    def set_repo(self, title, repo_url):
+        for stg in self.staged:
+            stg.repo_title = title
+            stg.repo_url = repo_url
 
     def build(self):
         assert not self.building

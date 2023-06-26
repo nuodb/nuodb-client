@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2020  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2020-2023  All Rights Reserved.
 #
 # Add the nuodb collection agent
 
@@ -31,6 +31,7 @@ class PyNuoCA(Package):
 
     def unpack(self):
         pypi = PyPIMetadata(self.__PKGNAME)
+        self.set_repo(pypi.friendlytitle, pypi.friendlyurl)
         self.setversion(pypi.version)
 
         rmdir(self.pkgroot)

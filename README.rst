@@ -74,6 +74,32 @@ Resources
 
 NuoDB Documentation_
 
+Building a client package
+-------------------------
+
+To build a client package, first clone this repository and ``cd`` into it. Then,
+decide on the version string you wish to use to identify this build of the client
+package (e.g., ``2023.1``). Then issue this command to download all the software
+included in the client package and bundle it::
+
+  $ ./build --version 2023.1
+
+The resulting bundle will be in the ``package`` directory::
+
+  $ ls -1 package/*.tar.gz
+  nuodb-tools-2023.1.lin-x64.tar.gz
+
+You may optionally build multiple bundles, one for CLI tools and one
+for drivers, by issuing this command::
+
+  $ ./build --separate-bundles --version 2023.1
+
+  $ ls -1 package/*.tar.gz
+  package/nuodb-cli-tools-2023.1.lin-x64.tar.gz
+  package/nuodb-drivers-2023.1.lin-x64.tar.gz
+
+Check ``./build --help`` for more options.
+
 License
 -------
 

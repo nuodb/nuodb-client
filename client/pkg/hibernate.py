@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Add the NuoDB hibernate clients
 
@@ -8,6 +8,7 @@ from client.package import Package
 from client.stage import Stage
 from client.artifact import MavenMetadata, Artifact
 from client.utils import mkdir, rmdir, copy, savefile
+from client.bundles import Bundles
 
 
 class HibernatePackage(Package):
@@ -24,7 +25,9 @@ class HibernatePackage(Package):
 
         self.staged = [Stage(name='hibernate5',
                              title='Hibernate5 Driver',
-                             requirements='Java 8 or 11')]
+                             requirements='Java 8 or 11',
+                             bundle=Bundles.DRIVERS,
+                             package=self.__PKGNAME)]
 
         self.stage = self.staged[0]
 
@@ -32,6 +35,7 @@ class HibernatePackage(Package):
         # Hibernate is complicated because both versions 3 and 5 are released
         # in the same Maven repository.
         mvn = MavenMetadata(self.__PATH)
+        self.set_repo(mvn.friendlytitle, mvn.friendlyurl)
 
         # Find the newest hib5 version
         for ver in mvn.metadata.find('versioning/versions'):

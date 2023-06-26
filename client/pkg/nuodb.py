@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Extract client content from the NuoDB database package
 
@@ -9,6 +9,7 @@ from client.package import Package
 from client.stage import Stage
 from client.artifact import Artifact
 from client.utils import Globals, mkdir, rmdir, loadfile, unpack_file, verbose
+from client.bundles import Bundles
 
 
 class NuoDBPackage(Package):
@@ -31,27 +32,40 @@ class NuoDBPackage(Package):
 
         self.stgs = {
             'nuosql': Stage('nuosql',
-                            title='nuosql',
-                            requirements='GNU/Linux or Windows'),
+                            title='NuoDB SQL (nuosql)',
+                            requirements='GNU/Linux or Windows',
+                            bundle=Bundles.CLI_TOOLS,
+                            package=self.__PKGNAME),
 
             'nuoloader': Stage('nuoloader',
-                               title='nuoloader',
-                               requirements='GNU/Linux or Windows'),
+                               title='NuoDB Loader (nuoloader)',
+                               requirements='GNU/Linux or Windows',
+                               bundle=Bundles.CLI_TOOLS,
+                               package=self.__PKGNAME),
 
             'nuodbmgr': Stage('nuodbmgr',
                               title='nuodbmgr',
-                              requirements='Java 8 or 11'),
+                              requirements='Java 8 or 11',
+                              bundle=Bundles.CLI_TOOLS,
+                              package=self.__PKGNAME),
 
             'nuoclient': Stage('nuoclient',
                                title='C Driver',
-                               requirements='GNU/Linux or Windows'),
+                               requirements='GNU/Linux or Windows',
+                               bundle=Bundles.DRIVERS,
+                               package=self.__PKGNAME),
 
             'nuoremote': Stage('nuoremote',
                                title='C++ Driver',
-                               requirements='GNU/Linux or Windows'),
+                               requirements='GNU/Linux or Windows',
+                               bundle=Bundles.DRIVERS,
+                               package=self.__PKGNAME),
+
             'nuodump': Stage('nuodump',
-                             title='NuoDB Logical Backup Tool',
-                             requirements='GNU/Linux or Windows')
+                             title='NuoDB Dump (nuodump)',
+                             requirements='GNU/Linux or Windows',
+                             bundle=Bundles.CLI_TOOLS,
+                             package=self.__PKGNAME)
         }
 
         self.staged = list(self.stgs.values())
@@ -90,6 +104,8 @@ class NuoDBPackage(Package):
                 self._pkg.update()
             except DownloadError:
                 raise ex
+
+        self.set_repo('NuoDB Server Package', self._pkg.url)
 
     def unpack(self):
         rmdir(self.pkgroot)

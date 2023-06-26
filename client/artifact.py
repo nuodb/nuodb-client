@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Manage artifacts used to create the client package.
 
@@ -65,12 +65,16 @@ class GitHubMetadata(object):
     """
 
     __METAURL = 'https://api.github.com/repos/{}/{}/releases/latest'
+    __FRIENDLYURL = 'https://github.com/{}/{}'
+    __TITLE = 'GitHub'
 
     def __init__(self, account, repo):
         super(GitHubMetadata, self).__init__()
         url = self.__METAURL.format(account, repo)
         self.metadata = json.loads(_getremotedata(url))
         self.version = self.metadata['name']
+        self.friendlyurl = self.__FRIENDLYURL.format(account, repo)
+        self.friendlytitle = self.__TITLE
 
         if self.metadata.get('assets'):
             self.pkgurl = self.metadata['assets'][0]['browser_download_url']
@@ -84,13 +88,17 @@ class PyPIMetadata(object):
     Metadata is a JSON object.
     """
 
-    __METAURL = 'https://pypi.org/pypi/{}/json'
+    __FRIENDLYURL = 'https://pypi.org/pypi/{}'
+    __METAURL = __FRIENDLYURL + '/json'
+    __TITLE = 'PyPI'
 
     def __init__(self, repo, extension='.tar.gz'):
         super(PyPIMetadata, self).__init__()
         url = self.__METAURL.format(repo)
         self.metadata = json.loads(_getremotedata(url))
         self.version = self.metadata['info']['version']
+        self.friendlyurl = self.__FRIENDLYURL.format(repo)
+        self.friendlytitle = self.__TITLE
         if extension is None:
             # User doesn't care so choose the first one
             pkg = self.metadata['urls'][0]
@@ -104,7 +112,6 @@ class PyPIMetadata(object):
         self.pkgurl = pkg['url']
         self.pkgchksum = pkg['digests']['sha256']
 
-
 class MavenMetadata(object):
     """Retrieve the metadata for a Maven repository.
 
@@ -112,7 +119,18 @@ class MavenMetadata(object):
     """
 
     __BASEURL = 'https://repo1.maven.org/maven2/{}'
+    __FRIENDLYURL = 'https://mvnrepository.com/artifact/{}'
     __METAFILE = 'maven-metadata.xml'
+    __TITLE = 'Maven Central'
+
+    def _path_to_friendly_url(self, path):
+        # Convert a/b/c/d to a.b.c/d
+        # E.g.,
+        #  com/nuodb/hibernate/nuodb-hibernate =>
+        #  com.nuodb.hibernate/nuodb-hibernate
+        # then substitute into friendly url
+        return self.__FRIENDLYURL.format(
+            path.replace('/', '.', path.count('/') - 1))
 
     def __init__(self, path):
         super(MavenMetadata, self).__init__()
@@ -120,6 +138,8 @@ class MavenMetadata(object):
         url = '{}/{}'.format(self.baseurl, self.__METAFILE)
         self.metadata = ET.fromstring(_getremotedata(url))
         self.version = self.metadata.find('versioning/release').text
+        self.friendlyurl = self._path_to_friendly_url(path)
+        self.friendlytitle = self.__TITLE
 
 
 class BaseArtifact(object):
@@ -186,11 +206,11 @@ class GitClone(BaseArtifact):
 
     _git = which('git')
 
-    def __init__(self, pkg, local, url, ref):
+    def __init__(self, pkg, local, url, ref, title):
         if not self._git:
             raise EnvironmentError("No git command found")
 
-        super(GitClone, self).__init__(pkg, local)
+        super(GitClone, self).__init__(pkg, local, title)
         self.url = url
         self._ref = ref
         verbose("Creating Git repo {} from {} ref {}".format(local, url, ref))

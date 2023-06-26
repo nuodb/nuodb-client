@@ -1,11 +1,11 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 
 import os
 import json
 
 from client.utils import Globals, loadfile, savefile, getcontents
 from client.utils import mkdir, rmdir, rmfile, copy, copyinto
-
+from client.bundles import Bundles
 
 class Stage(object):
     """Class representing the staged content of a client."""
@@ -26,11 +26,13 @@ class Stage(object):
     # Any files here will be added to the generated results
     extracontents = None
 
-    def __init__(self, name, title=None, requirements=None, notes=None):
+    def __init__(self, name, title=None, requirements=None, notes=None, bundle=None, package=None):
         self.name = name
         self.title = title
         self.requirements = requirements
         self.notes = notes
+        self.bundle = bundle
+        self.package = package
         self._staged = []
         self.omitcontents = []
         self.extracontents = []

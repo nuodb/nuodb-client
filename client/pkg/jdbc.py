@@ -1,4 +1,4 @@
-# (C) Copyright NuoDB, Inc. 2019  All Rights Reserved.
+# (C) Copyright NuoDB, Inc. 2019-2023  All Rights Reserved.
 #
 # Add the nuodb-jdbc client
 
@@ -8,6 +8,7 @@ from client.package import Package
 from client.stage import Stage
 from client.artifact import MavenMetadata, Artifact
 from client.utils import mkdir, rmdir, copy, savefile
+from client.bundles import Bundles
 
 
 class JDBCPackage(Package):
@@ -24,7 +25,9 @@ class JDBCPackage(Package):
 
         self.staged = [Stage('nuodbjdbc',
                              title='NuoDB JDBC Driver',
-                             requirements='Java 8 or 11')]
+                             requirements='Java 8 or 11',
+                             bundle=Bundles.DRIVERS,
+                             package=self.__PKGNAME)]
 
         self.stage = self.staged[0]
 
@@ -35,6 +38,7 @@ class JDBCPackage(Package):
     def download(self):
         # Find the latest release
         mvn = MavenMetadata(self.__PATH)
+        self.set_repo(mvn.friendlytitle, mvn.friendlyurl)
 
         self.setversion(mvn.version)
 
