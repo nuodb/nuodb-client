@@ -36,6 +36,8 @@ class Stage(object):
         self._staged = []
         self.omitcontents = []
         self.extracontents = []
+        self.repo_title = ""
+        self.repo_url = ""
 
     def setup(self, basedir):
         stgroot = Globals.stageroot
