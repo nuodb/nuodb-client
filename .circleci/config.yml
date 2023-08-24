@@ -20,7 +20,7 @@ jobs:
           command: |
             python ./build -v -p lin-x64 --version "${CIRCLE_BUILD_NUM}"
       - store_artifacts:
-          path: package
+          path: package/nuodb-tools-${CIRCLE_BUILD_NUM}.lin-x64.tar.gz
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
