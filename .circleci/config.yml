@@ -16,11 +16,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Build package"
+          name: "Build Linux package"
           command: |
             python ./build -v -p lin-x64 --version "9999"
       - store_artifacts:
-          path: package/*.lin-x64.tar.gz
+          path: package
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
