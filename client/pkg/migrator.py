@@ -16,11 +16,11 @@ class MigratorPackage(Package):
 
     __USER = 'nuodb'
     __REPO = 'migration-tools'
-    __ZIP = 'nuodb-migrator.zip'
+    __TAR = 'nuodb-migrator.tar'
 
     def __init__(self):
         super(MigratorPackage, self).__init__(self.__PKGNAME)
-        self._zip = None
+        self._tar = None
 
         self.staged = [Stage(self.__PKGNAME,
                              title='NuoDB Migrator (nuodb-migrator)',
@@ -34,13 +34,13 @@ class MigratorPackage(Package):
         self.set_repo(repo.friendlytitle, repo.friendlyurl)
         self.stage.version = repo.version
 
-        self._zip = Artifact(self.name, self.__ZIP, repo.pkgurl)
-        self._zip.update()
+        self._tar = Artifact(self.name, self.__TAR, repo.pkgurl)
+        self._tar.update()
 
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        unpack_file(self._zip.path, self.pkgroot)
+        unpack_file(self._tar.path, self.pkgroot)
 
     def install(self):
         self.stage.stage('jar', ['jar/'])
