@@ -18,7 +18,7 @@ jobs:
       - run:
           name: "Build Linux package"
           command: |
-            python ./build -v -p lin-x64 --version "9999"
+            python ./build -v -p lin-x64 --version "${CIRCLE_BUILD_NUM}"
       - store_artifacts:
           path: package
 
