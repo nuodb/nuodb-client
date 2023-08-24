@@ -2,8 +2,8 @@
 NuoDB Client Package
 ====================
 
-.. image:: https://travis-ci.org/nuodb/nuodb-client.svg?branch=master
-    :target: https://travis-ci.org/nuodb/nuodb-client
+.. image:: https://dl.circleci.com/status-badge/img/gh/nuodb/nuodb-client/tree/master.svg?style=svg
+        :target: https://dl.circleci.com/status-badge/redirect/gh/nuodb/nuodb-client/tree/master
 
 .. contents::
 
