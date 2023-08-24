@@ -18,7 +18,7 @@ jobs:
       - run:
           name: "Build package"
           command: |
-            python ./build -v -p lin-x64 --version "9999"'
+            python ./build -v -p lin-x64 --version "9999"
       - store_artifacts:
           path: package/*.lin-x64.tar.gz
 
