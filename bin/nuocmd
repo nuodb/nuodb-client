@@ -18,6 +18,10 @@ if test -z "$_python"; then
     _python=$(command -v python3) \
         || _python=$(command -v python) \
         || die "Python must be installed"
+    _python_version="$($_python --version)"
+    if [[ "$_python_version" == *"3.6"* ]]; then
+        die "$_python_version not supported. Please use python version 3.7 or above."
+    fi
 fi
 
 # Find the pynuoadmin installation
