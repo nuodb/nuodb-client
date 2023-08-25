@@ -80,7 +80,7 @@ GROUP = 'nuodb'
 
 PYTHONVERSION = 3
 
-DEFAULT_BUNDLE_NAME = 'tools'
+DEFAULT_BUNDLE_NAME = 'client'
 
 
 def bundle_to_pkgname(bundle, target):
