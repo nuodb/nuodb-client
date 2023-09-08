@@ -42,8 +42,9 @@ class JDBCPackage(Package):
 
         self.setversion(mvn.version)
 
-        self._jar = Artifact(self.name, 'nuodbjdbc.jar',
-                             '{}/{}/{}'.format(mvn.baseurl, mvn.version, self.__JAR.format(mvn.version)))
+        jar_name = self.__JAR.format(mvn.version)
+        self._jar = Artifact(self.name, jar_name,
+                             '{}/{}/{}'.format(mvn.baseurl, mvn.version, jar_name))
 
         # We only download the actual jar file
         self._jar.update()
@@ -55,7 +56,6 @@ class JDBCPackage(Package):
         savefile(os.path.join(self.pkgroot, 'LICENSE.txt'), self.getlicense('3BSD'))
 
     def install(self):
-        self.stage.stage('jar', ['nuodbjdbc.jar'])
         self.stage.stage('doc', ['LICENSE.txt'])
 
         nuodb = self.get_package('nuodb')
