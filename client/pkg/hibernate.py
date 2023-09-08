@@ -23,6 +23,8 @@ class HibernatePackage(Package):
         super(HibernatePackage, self).__init__(self.__PKGNAME)
         self._hib5 = None
         self._hib6 = None
+        self._jar5_name = None
+        self._jar6_name = None
 
         self.staged = [Stage(name='hibernate5',
                              title='Hibernate5 Driver',
@@ -51,14 +53,16 @@ class HibernatePackage(Package):
             elif ver.text.endswith('hib6'):
                 self.stage6.version = ver.text
 
-        self._hib5 = Artifact(self.name, 'nuodb-hibernate-hib5.jar',
+        self._jar5_name = self.__JAR.format(self.stage5.version)
+        self._hib5 = Artifact(self.name, self._jar5_name,
                              '{}/{}/{}'.format(mvn.baseurl,
                                                self.stage5.version,
-                                               self.__JAR.format(self.stage5.version)))
-        self._hib6 = Artifact(self.name, 'nuodb-hibernate-hib6.jar',
+                                               self._jar5_name))
+        self._jar6_name = self.__JAR.format(self.stage6.version)
+        self._hib6 = Artifact(self.name, self._jar6_name,
                              '{}/{}/{}'.format(mvn.baseurl,
                                                self.stage6.version,
-                                               self.__JAR.format(self.stage6.version)))
+                                               self._jar6_name))
 
         # We only download the actual jar files
         self._hib5.update()
@@ -67,15 +71,15 @@ class HibernatePackage(Package):
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        copy(self._hib5.path, os.path.join(self.pkgroot, 'nuodb-hibernate-hib5.jar'))
-        copy(self._hib6.path, os.path.join(self.pkgroot, 'nuodb-hibernate-hib6.jar'))
+        copy(self._hib5.path, os.path.join(self.pkgroot, self._jar5_name))
+        copy(self._hib6.path, os.path.join(self.pkgroot, self._jar6_name))
         savefile(os.path.join(self.pkgroot, 'LICENSE.txt'), self.getlicense('3BSD'))
 
     def install(self):
-        self.stage5.stage('jar', ['nuodb-hibernate-hib5.jar'])
+        self.stage5.stage('jar', [self._jar5_name])
         self.stage5.stage('doc', ['LICENSE.txt'])
 
-        self.stage6.stage('jar', ['nuodb-hibernate-hib6.jar'])
+        self.stage6.stage('jar', [self._jar6_name])
         self.stage6.stage('doc', ['LICENSE.txt'])
 
 
