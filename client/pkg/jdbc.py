@@ -22,6 +22,7 @@ class JDBCPackage(Package):
     def __init__(self):
         super(JDBCPackage, self).__init__(self.__PKGNAME)
         self._jar = None
+        self._jar_name = None
 
         self.staged = [Stage('nuodbjdbc',
                              title='NuoDB JDBC Driver',
@@ -42,9 +43,9 @@ class JDBCPackage(Package):
 
         self.setversion(mvn.version)
 
-        jar_name = self.__JAR.format(mvn.version)
-        self._jar = Artifact(self.name, jar_name,
-                             '{}/{}/{}'.format(mvn.baseurl, mvn.version, jar_name))
+        self._jar_name = self.__JAR.format(mvn.version)
+        self._jar = Artifact(self.name, self._jar_name,
+                             '{}/{}/{}'.format(mvn.baseurl, mvn.version, self._jar_name))
 
         # We only download the actual jar file
         self._jar.update()
@@ -56,6 +57,7 @@ class JDBCPackage(Package):
         savefile(os.path.join(self.pkgroot, 'LICENSE.txt'), self.getlicense('3BSD'))
 
     def install(self):
+        self.stage.stage('jar', [self._jar_name])
         self.stage.stage('doc', ['LICENSE.txt'])
 
         nuodb = self.get_package('nuodb')
