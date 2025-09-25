@@ -52,13 +52,13 @@ class NuoDBPackage(Package):
             'nuoclient': Stage('nuoclient',
                                title='C Driver',
                                requirements='GNU/Linux or Windows',
-                               bundle=Bundles.DRIVERS,
+                               bundle=Bundles.DRIVER_C,
                                package=self.__PKGNAME),
 
             'nuoremote': Stage('nuoremote',
                                title='C++ Driver',
                                requirements='GNU/Linux or Windows',
-                               bundle=Bundles.DRIVERS,
+                               bundle=Bundles.DRIVER_CPP,
                                package=self.__PKGNAME),
 
             'nuodump': Stage('nuodump',
