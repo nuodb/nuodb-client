@@ -46,7 +46,6 @@ class NuoDBPackage(Package):
             'nuodbmgr': Stage('nuodbmgr',
                               title='nuodbmgr',
                               requirements='Java 8 or 11',
-                              bundle=Bundles.CLI_TOOLS,
                               package=self.__PKGNAME),
 
             'nuoclient': Stage('nuoclient',

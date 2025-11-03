@@ -24,8 +24,7 @@ class NuocmdPackage(PyNuoadminPackage):
 
         self.staged = [Stage(self.__PKGNAME,
                              title='nuocmd',
-                             requirements='Python 3',
-                             bundle=Bundles.TOOLS)]
+                             requirements='Python 3')]
 
         self.stage = self.staged[0]
 

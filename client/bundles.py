@@ -9,10 +9,9 @@ from enum import Enum
 
 class Bundles(dict, Enum):
     SQL_TOOLS = {"name": "sql-tools", "title": "SQL tools"}
-    CLI_TOOLS = {"name": "cli-tools", "title": "CLI tools"}
-    DRIVERS = {"name": "other-drivers", "title": "Other drivers"}
     DRIVER_C = {"name": "c-driver", "title": "C driver"}
     DRIVER_CPP = {"name": "cpp-driver", "title": "C++ driver"}
+    ODBC = {"name": "odbc-driver", "title": "ODBC Driver"}
 
     def __str__(self):
         return self["name"]

@@ -30,7 +30,7 @@ class ODBCPackage(Package):
         self.staged = [Stage('nuodbodbc',
                              title='NuoDB ODBC Driver',
                              requirements='NuoDB C++ Driver; either UnixODBC 2.3 or Windows',
-                             bundle=Bundles.DRIVERS,
+                             bundle=Bundles.ODBC,
                              package=self.__PKGNAME)]
         self.stage = self.staged[0]
 
