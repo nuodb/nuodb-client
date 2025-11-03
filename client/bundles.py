@@ -14,4 +14,4 @@ class Bundles(dict, Enum):
     ODBC = {"name": "odbc-driver", "title": "ODBC Driver"}
 
     def __str__(self):
-        return self["name"]
+        return self['name']
