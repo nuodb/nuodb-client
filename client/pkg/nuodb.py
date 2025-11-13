@@ -34,19 +34,18 @@ class NuoDBPackage(Package):
             'nuosql': Stage('nuosql',
                             title='NuoDB SQL (nuosql)',
                             requirements='GNU/Linux or Windows',
-                            bundle=Bundles.CLI_TOOLS,
+                            bundle=Bundles.SQL_TOOLS,
                             package=self.__PKGNAME),
 
             'nuoloader': Stage('nuoloader',
                                title='NuoDB Loader (nuoloader)',
                                requirements='GNU/Linux or Windows',
-                               bundle=Bundles.CLI_TOOLS,
+                               bundle=Bundles.SQL_TOOLS,
                                package=self.__PKGNAME),
 
             'nuodbmgr': Stage('nuodbmgr',
                               title='nuodbmgr',
                               requirements='Java 8 or 11',
-                              bundle=Bundles.CLI_TOOLS,
                               package=self.__PKGNAME),
 
             'nuoclient': Stage('nuoclient',
@@ -64,7 +63,7 @@ class NuoDBPackage(Package):
             'nuodump': Stage('nuodump',
                              title='NuoDB Dump (nuodump)',
                              requirements='GNU/Linux or Windows',
-                             bundle=Bundles.CLI_TOOLS,
+                             bundle=Bundles.SQL_TOOLS,
                              package=self.__PKGNAME)
         }
 
