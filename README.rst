@@ -8,12 +8,12 @@ NuoDB Client Package
 .. contents::
 
 The NuoDB Client Package bundles the latest publicly-available NuoDB_ database
-client versions into a single downloadable file. The official versions of the
-NuoDB Client Package file are available from the NuoDB `GitHub Releases`_
+client versions into a single downloadable files. The official versions of the
+NuoDB Client Package files are available from the NuoDB `GitHub Releases`_
 page.
 
-You can also use this project to create a package containing customized sets
-of NuoDB Client packages.
+You can also use this project to create packages containing customized sets
+of NuoDB Client individual packages.
 
 Requirements
 ------------
@@ -33,7 +33,7 @@ database are found in the NuoDB documentation `System Requirements`_ page.
 +--------------------+----------------------------------------+
 |nuodump             |GNU/Linux or Windows                    |
 +--------------------+----------------------------------------+
-|nuodb-migrator      |Java 8 or 11                            |
+|migrator (dep)      |Java 8 or 11                            |
 +--------------------+----------------------------------------+
 
 Also included are SQL drivers:
@@ -51,6 +51,8 @@ Also included are SQL drivers:
 +------------------+---------------------+
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
+|Hibernate6        |Java 11 or 17        |
++------------------+---------------------+
 |Python            |Python 3.6 or later  |
 +------------------+---------------------+
 
@@ -63,7 +65,7 @@ Client Package Installation
 ---------------------------
 
 Unpack the tar file, or unzip the zip file which will create a
-*nuodb-client-<ver>* directory that contains the NuoDB Client Package files.
+*nuodb-<package>-<ver>* directory that contains the NuoDB Client Package files.
 
 To use the drivers you may need to configure your user applications with the
 appropriate path settings to locate your NuoDB Client package install
@@ -79,24 +81,24 @@ Building a client package
 
 To build a client package, first clone this repository and ``cd`` into it. Then,
 decide on the version string you wish to use to identify this build of the client
-package (e.g., ``2023.1``). Then issue this command to download all the software
+package (e.g., ``2025.3``). Then issue this command to download all the software
 included in the client package and bundle it::
 
-  $ ./build --version 2023.1
+  $ ./build --version 2025.3
 
 The resulting bundle will be in the ``package`` directory::
 
   $ ls -1 package/*.tar.gz
-  nuodb-tools-2023.1.lin-x64.tar.gz
+  nuodb-tools-2025.3.lin-x64.tar.gz
 
 You may optionally build multiple bundles, one for CLI tools and one
 for drivers, by issuing this command::
 
-  $ ./build --separate-bundles --version 2023.1
+  $ ./build --separate-bundles --version 2025.3
 
   $ ls -1 package/*.tar.gz
-  package/nuodb-cli-tools-2023.1.lin-x64.tar.gz
-  package/nuodb-drivers-2023.1.lin-x64.tar.gz
+  package/nuodb-cli-tools-2025.3.lin-x64.tar.gz
+  package/nuodb-drivers-2025.3.lin-x64.tar.gz
 
 Check ``./build --help`` for more options.
 
