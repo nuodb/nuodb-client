@@ -25,6 +25,7 @@ class MigratorPackage(Package):
         self.staged = [Stage(self.__PKGNAME,
                              title='NuoDB Migrator (nuodb-migrator)',
                              requirements='Java 8 or 11',
+                             bundle=Bundles.CLIENT,
                              package=self.__PKGNAME)]
         self.stage = self.staged[0]
 

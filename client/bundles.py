@@ -12,6 +12,7 @@ class Bundles(dict, Enum):
     DRIVER_C = {"name": "c-driver", "title": "C driver"}
     DRIVER_CPP = {"name": "cpp-driver", "title": "C++ driver"}
     ODBC = {"name": "odbc-driver", "title": "ODBC Driver"}
+    CLIENT = {"name": "client-package", "title": "Client Package"}
 
     def __str__(self):
         return self['name']

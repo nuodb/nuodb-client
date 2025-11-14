@@ -24,6 +24,7 @@ class PyNuodbPackage(Package):
         self.staged = [Stage(self.__PKGNAME,
                              title='Python Driver (pynuodb)',
                              requirements='Python 2 or 3',
+                             bundle=Bundles.CLIENT,
                              package=self.__PKGNAME,
                              notes="""
     For improved performance, install the Python cryptography package:
