@@ -13,7 +13,7 @@ components are also available. The official versions of the NuoDB Client Package
 files are available from the NuoDB `GitHub Releases`_
 page.
 
-You can also use this project to create packages containing customized sets
+This project can also be used to create packages containing customized sets
 of NuoDB Client individual packages.
 
 Requirements
@@ -58,8 +58,8 @@ Also included are SQL drivers:
 +------------------+---------------------+
 
 The use of the NuoDB clients and the drivers in this package require a running
-NuoDB database.  If you don't have a NuoDB_ database running in your
-environment, refer to the NuoDB Documentation_ to guide you through the steps
+NuoDB database.  If a NuoDB_ database is not running in the
+environment, refer to the NuoDB Documentation_ for steps
 to deploy a NuoDB database.
 
 Client Package Installation
@@ -68,8 +68,8 @@ Client Package Installation
 Unpack the tar file, or unzip the zip file which will create a
 *nuodb-<package>-<ver>* directory that contains the NuoDB Client Package files.
 
-To use the drivers you may need to configure your user applications with the
-appropriate path settings to locate your NuoDB Client package install
+To use the drivers, user applications may need to be configured with the
+appropriate path settings to locate the NuoDB Client package install
 directory at runtime.
 
 Resources
@@ -81,7 +81,7 @@ Building a client package
 -------------------------
 
 To build a client package, first clone this repository and ``cd`` into it. Then,
-decide on the version string you wish to use to identify this build of the client
+decide on the version string to use to identify this build of the client
 package (e.g., ``2025.3``).
 
 By default, a single package is generated that includes all the drivers and
@@ -94,7 +94,7 @@ The resulting bundle will be in the ``package`` directory::
   $ ls -1 package/*.tar.gz
   package/nuodb-client-2025.3.lin-x64.tar.gz
 
-You may optionally build multiple bundles, one for each separate component.
+Optionally, multiple bundles can be built, one for each separate component type.
 The following command will generate separate packages for the C, C++, and ODBC
 drivers, and for the SQL tools::
 
