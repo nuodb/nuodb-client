@@ -34,7 +34,7 @@ database are found in the NuoDB documentation `System Requirements`_ page.
 +--------------------+----------------------------------------+
 |nuodump             |GNU/Linux or Windows                    |
 +--------------------+----------------------------------------+
-|migrator (dep)      |Java 8 or 11                            |
+|nuodb-migrator      |Java 8 or 11                            |
 +--------------------+----------------------------------------+
 
 Also included are SQL drivers:
