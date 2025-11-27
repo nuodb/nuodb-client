@@ -7,13 +7,14 @@ NuoDB Client Package
 
 .. contents::
 
-The NuoDB Client Package bundles the latest publicly-available NuoDB_ database
-client versions into a single downloadable file. The official versions of the
-NuoDB Client Package file are available from the NuoDB `GitHub Releases`_
+The NuoDB Client Package bundles the latest publicly available NuoDB_ database
+client versions into a single downloadable file. Separate packages for each
+components are also available. The official versions of the NuoDB Client Package
+files are available from the NuoDB `GitHub Releases`_
 page.
 
-You can also use this project to create a package containing customized sets
-of NuoDB Client packages.
+This project can also be used to create packages containing customized sets
+of NuoDB Client individual packages.
 
 Requirements
 ------------
@@ -51,22 +52,24 @@ Also included are SQL drivers:
 +------------------+---------------------+
 |Hibernate5        |Java 8 or 11         |
 +------------------+---------------------+
+|Hibernate6        |Java 11 or 17        |
++------------------+---------------------+
 |Python            |Python 3.6 or later  |
 +------------------+---------------------+
 
 The use of the NuoDB clients and the drivers in this package require a running
-NuoDB database.  If you don't have a NuoDB_ database running in your
-environment, refer to the NuoDB Documentation_ to guide you through the steps
+NuoDB database.  If a NuoDB_ database is not running in the
+environment, refer to the NuoDB Documentation_ for steps
 to deploy a NuoDB database.
 
 Client Package Installation
 ---------------------------
 
 Unpack the tar file, or unzip the zip file which will create a
-*nuodb-client-<ver>* directory that contains the NuoDB Client Package files.
+*nuodb-<package>-<ver>* directory that contains the NuoDB Client Package files.
 
-To use the drivers you may need to configure your user applications with the
-appropriate path settings to locate your NuoDB Client package install
+To use the drivers, user applications may need to be configured with the
+appropriate path settings to locate the NuoDB Client package install
 directory at runtime.
 
 Resources
@@ -78,25 +81,40 @@ Building a client package
 -------------------------
 
 To build a client package, first clone this repository and ``cd`` into it. Then,
-decide on the version string you wish to use to identify this build of the client
-package (e.g., ``2023.1``). Then issue this command to download all the software
-included in the client package and bundle it::
+decide on the version string to use to identify this build of the client
+package (e.g., ``2025.3``).
 
-  $ ./build --version 2023.1
+By default, a single package is generated that includes all the drivers and
+tools. To build this package, issue this command::
+
+  $ ./build --version 2025.3
 
 The resulting bundle will be in the ``package`` directory::
 
   $ ls -1 package/*.tar.gz
-  nuodb-tools-2023.1.lin-x64.tar.gz
+  package/nuodb-client-2025.3.lin-x64.tar.gz
 
-You may optionally build multiple bundles, one for CLI tools and one
-for drivers, by issuing this command::
+Optionally, multiple bundles can be built, one for each separate component type.
+The following command will generate separate packages for the C, C++, and ODBC
+drivers, and for the SQL tools::
 
-  $ ./build --separate-bundles --version 2023.1
+  $ ./build --separate-bundles --version 2025.3
 
   $ ls -1 package/*.tar.gz
-  package/nuodb-cli-tools-2023.1.lin-x64.tar.gz
-  package/nuodb-drivers-2023.1.lin-x64.tar.gz
+  package/nuodb-c-driver-2025.3.lin-x64.tar.gz
+  package/nuodb-cpp-driver-2025.3.lin-x64.tar.gz
+  package/nuodb-odbc-driver-2025.3.lin-x64.tar.gz
+  package/nuodb-sql-tools-2025.3.lin-x64.tar.gz
+
+Note that some components are not yet assigned to a separate bundle, and will
+not be included in any of the packages generated with ``--separate-bundles``.
+These components are:
+
+- JDBC driver
+- Hibernate drivers
+- pynuodb driver
+
+These components are included in the default ``nuodb-client`` package.
 
 Check ``./build --help`` for more options.
 
