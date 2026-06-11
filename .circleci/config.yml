@@ -1,21 +1,21 @@
 version: 2.1
 
 jobs:
-   build-linux:
-     docker:
-       - image: cimg/python:3.11.4
-     resource_class: small
-     setup_remote_docker:
-       version: 20.10.14
-     steps:
-       - checkout
-       - run:
-           name: "Build Linux package"
-           command: |
-             python ./build -v -p lin-x64 --version "${CIRCLE_BUILD_NUM}"
-             cp package/nuodb-client-${CIRCLE_BUILD_NUM}.lin-x64.tar.gz package/nuodb-client.lin-x64.tar.gz
-       - store_artifacts:
-           path: package/nuodb-client.lin-x64.tar.gz
+  build-linux:
+    docker:
+      - image: cimg/python:3.11.4
+    resource_class: small
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: "Build Linux package"
+          command: |
+            python ./build -v -p lin-x64 --version "${CIRCLE_BUILD_NUM}"
+            cp package/nuodb-client-${CIRCLE_BUILD_NUM}.lin-x64.tar.gz package/nuodb-client.lin-x64.tar.gz
+      - store_artifacts:
+          path: package/nuodb-client.lin-x64.tar.gz
 
 workflows:
   build:
