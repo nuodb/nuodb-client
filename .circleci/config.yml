@@ -5,12 +5,16 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  build-linux:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/configuration-reference/#executor-job
-    docker:
-      - image: cimg/python:3.11.4
-    resource_class: small
+   build-linux:
+     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
+     # See: https://circleci.com/docs/configuration-reference/#executor-job
+     docker:
+       - image: cimg/python:3.11.4
+     resource_class: small
+     # Enable Docker-in-Docker for running Docker commands
+     # See: https://circleci.com/docs/building-docker-images
+     setup_remote_docker:
+       version: 20.10.14
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
