@@ -3,12 +3,13 @@
 # Extract client content from the NuoDB database package
 
 import os
+import subprocess
 
 from client.exceptions import DownloadError, UnpackError
 from client.package import Package
 from client.stage import Stage
 from client.artifact import Artifact
-from client.utils import Globals, mkdir, rmdir, loadfile, unpack_file, verbose
+from client.utils import Globals, mkdir, rmdir, loadfile, unpack_file, verbose, run, runout, copyinto
 from client.bundles import Bundles
 
 
@@ -16,14 +17,6 @@ class NuoDBPackage(Package):
     """Extract NuoDB clients from the database package."""
 
     __PKGNAME = 'nuodb'
-
-    __NUODB_URL = 'https://ce-downloads.nuohub.org'
-    __VERSIONS = 'supportedversions.txt'
-    __LINX64FORMAT = 'nuodb-{}.linux.x86_64'
-    __LINARM64FORMAT = 'nuodb-{}.linux.arm64'
-    __TAREXT = '.tar.gz'
-    __ZIPFORMAT = 'nuodb-{}.win64'
-    __ZIPEXT = '.zip'
 
     def __init__(self):
         super(NuoDBPackage, self).__init__(self.__PKGNAME)
@@ -70,47 +63,51 @@ class NuoDBPackage(Package):
         self.staged = list(self.stgs.values())
 
     def download(self):
-        versions = Artifact(self.name, self.__VERSIONS,
-                            '{}/{}'.format(self.__NUODB_URL, self.__VERSIONS))
-        versions.get()
+        # Use Docker to pull the NuoDB image and extract files
+        docker_image = 'nuodb/nuodb:latest'
+        verbose(f"Pulling Docker image: {docker_image}")
 
-        version = loadfile(versions.path).split()[-1]
-        self.setversion(version)
+        # Pull the Docker image
+        (ret, out, err) = runout(['docker', 'pull', docker_image])
+        if ret != 0:
+            raise DownloadError(f"Failed to pull Docker image {docker_image}: {err}")
 
-        if Globals.target == 'lin-x64':
-            fmt = self.__LINX64FORMAT
-            ext = self.__TAREXT
-        elif Globals.target == 'lin-arm64':
-            fmt = self.__LINARM64FORMAT
-            ext = self.__TAREXT
-        else:
-            fmt = self.__ZIPFORMAT
-            ext = self.__ZIPEXT
+        # Create a temporary container to extract files
+        container_name = 'nuodb-extract'
+        verbose(f"Creating temporary container: {container_name}")
+        (ret, out, err) = runout(['docker', 'create', '--name', container_name, docker_image])
+        if ret != 0:
+            raise DownloadError(f"Failed to create container {container_name}: {err}")
 
-        try:
-            self._dirname = fmt.format(version)
-            pkgname = self._dirname + ext
-            self._pkg = Artifact(self.name, pkgname,
-                                 '{}/{}'.format(self.__NUODB_URL, pkgname))
-            self._pkg.update()
-        except DownloadError as ex:
-            # Older releases publish packages named with a "ce" label; try that
-            try:
-                self._dirname = fmt.format('ce-'+version)
-                pkgname = self._dirname + ext
-                self._pkg = Artifact(self.name, pkgname,
-                                     '{}/{}'.format(self.__NUODB_URL, pkgname))
-                self._pkg.update()
-            except DownloadError:
-                raise ex
+        # Extract files from the container
+        extract_path = os.path.join(Globals.downloadroot, self.name)
+        mkdir(extract_path)
+        verbose(f"Extracting files to: {extract_path}")
+        (ret, out, err) = runout(['docker', 'cp', f'{container_name}:/opt/nuodb', extract_path])
+        if ret != 0:
+            raise DownloadError(f"Failed to extract files from container: {err}")
 
-        self.set_repo('NuoDB Server Package', self._pkg.url)
+        # Clean up the container
+        verbose(f"Removing temporary container: {container_name}")
+        run(['docker', 'rm', '-f', container_name])
+
+        # Set the version and package details
+        self._dirname = 'nuodb'
+        self._pkg = Artifact(self.name, 'nuodb-extracted', extract_path)
+        self._pkg.path = extract_path
+        self.setversion('latest')
+        self.set_repo('NuoDB Docker Image', docker_image)
 
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
-        unpack_file(self._pkg.path, self.pkgroot)
+
+        # Copy extracted files to pkgroot
+        src_path = self._pkg.path
         udir = os.path.join(self.pkgroot, self._dirname)
+        mkdir(udir)
+        copyinto(src_path, udir)
+
         if not os.path.exists(udir):
             raise UnpackError("Unpack did not create %s" % (udir))
 
