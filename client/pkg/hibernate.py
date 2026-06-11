@@ -12,7 +12,7 @@ from client.bundles import Bundles
 
 
 class HibernatePackage(Package):
-    """Add the NuoDB Hibernate 5 and 6 client."""
+    """Add the NuoDB Hibernate 5, 6 and 7 client."""
 
     __PKGNAME = 'hibernate'
 
@@ -23,6 +23,7 @@ class HibernatePackage(Package):
         super(HibernatePackage, self).__init__(self.__PKGNAME)
         self._hib5 = None
         self._hib6 = None
+        self._hib7 = None
 
         self.staged = [Stage(name='hibernate5',
                              title='Hibernate5 Driver',
@@ -31,13 +32,18 @@ class HibernatePackage(Package):
                        Stage(name='hibernate6',
                              title='Hibernate6 Driver',
                              requirements='Java 11',
+                             package=self.__PKGNAME),
+                       Stage(name='hibernate7',
+                             title='Hibernate7 Driver',
+                             requirements='Java 17',
                              package=self.__PKGNAME)]
 
         self.stage5 = self.staged[0]
         self.stage6 = self.staged[1]
+        self.stage7 = self.staged[2]
 
     def download(self):
-        # Hibernate is complicated because both versions 3 and 5 are released
+        # Hibernate is complicated because all versions of the dialect are released
         # in the same Maven repository.
         mvn = MavenMetadata(self.__PATH)
         self.set_repo(mvn.friendlytitle, mvn.friendlyurl)
@@ -48,6 +54,8 @@ class HibernatePackage(Package):
                 self.stage5.version = ver.text
             elif ver.text.endswith('hib6'):
                 self.stage6.version = ver.text
+            elif ver.text.endswith('hib7'):
+                self.stage7.version = ver.text
 
         self._hib5 = Artifact(self.name, 'nuodb-hibernate-hib5.jar',
                              '{}/{}/{}'.format(mvn.baseurl,
@@ -57,16 +65,22 @@ class HibernatePackage(Package):
                              '{}/{}/{}'.format(mvn.baseurl,
                                                self.stage6.version,
                                                self.__JAR.format(self.stage6.version)))
+        self._hib7 = Artifact(self.name, 'nuodb-hibernate-hib7.jar',
+                             '{}/{}/{}'.format(mvn.baseurl,
+                                               self.stage7.version,
+                                               self.__JAR.format(self.stage7.version)))
 
         # We only download the actual jar files
         self._hib5.update()
         self._hib6.update()
+        self._hib7.update()
 
     def unpack(self):
         rmdir(self.pkgroot)
         mkdir(self.pkgroot)
         copy(self._hib5.path, os.path.join(self.pkgroot, 'nuodb-hibernate-hib5.jar'))
         copy(self._hib6.path, os.path.join(self.pkgroot, 'nuodb-hibernate-hib6.jar'))
+        copy(self._hib7.path, os.path.join(self.pkgroot, 'nuodb-hibernate-hib7.jar'))
         savefile(os.path.join(self.pkgroot, 'LICENSE.txt'), self.getlicense('3BSD'))
 
     def install(self):
@@ -76,6 +90,8 @@ class HibernatePackage(Package):
         self.stage6.stage('jar', ['nuodb-hibernate-hib6.jar'])
         self.stage6.stage('doc', ['LICENSE.txt'])
 
+        self.stage7.stage('jar', ['nuodb-hibernate-hib7.jar'])
+        self.stage7.stage('doc', ['LICENSE.txt'])
 
 # Create and register this package
 HibernatePackage()
