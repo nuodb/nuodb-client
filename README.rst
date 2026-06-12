@@ -84,6 +84,14 @@ To build a client package, first clone this repository and ``cd`` into it. Then,
 decide on the version string to use to identify this build of the client
 package (e.g., ``2025.3``).
 
+By default, the build extracts NuoDB client files from the ``nuodb/nuodb:latest``
+Docker image. To build from a specific NuoDB image tag or digest, pass
+``nuodb_image=...`` after the regular build options::
+
+  $ ./build --version 2025.3 nuodb_image=nuodb/nuodb:2025.3.0
+
+  $ ./build --version 2025.3 nuodb_image=nuodb/nuodb@sha256:<digest>
+
 By default, a single package is generated that includes all the drivers and
 tools. To build this package, issue this command::
 

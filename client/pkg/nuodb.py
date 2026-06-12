@@ -64,7 +64,7 @@ class NuoDBPackage(Package):
 
     def download(self):
         # Use Docker to pull the NuoDB image and extract files
-        docker_image = 'nuodb/nuodb:latest'
+        docker_image = getattr(Globals, 'nuodb_image', 'nuodb/nuodb:latest')
         verbose(f"Pulling Docker image: {docker_image}")
 
         # Pull the Docker image
