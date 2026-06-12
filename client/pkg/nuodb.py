@@ -17,7 +17,7 @@ class NuoDBPackage(Package):
 
     __PKGNAME = 'nuodb'
 
-    __NUODB_URL = 'https://ce-downloads.nuohub.org'
+    __NUODB_URL = 'https://download.nuodb.com'
     __VERSIONS = 'supportedversions.txt'
     __LINX64FORMAT = 'nuodb-{}.linux.x86_64'
     __LINARM64FORMAT = 'nuodb-{}.linux.arm64'
