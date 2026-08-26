@@ -26,6 +26,7 @@ class JDBCPackage(Package):
         self.staged = [Stage('nuodbjdbc',
                              title='NuoDB JDBC Driver',
                              requirements='Java 8 or 11',
+                             bundle=Bundles.CLIENT,
                              package=self.__PKGNAME)]
 
         self.stage = self.staged[0]

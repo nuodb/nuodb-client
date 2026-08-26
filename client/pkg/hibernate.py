@@ -28,14 +28,17 @@ class HibernatePackage(Package):
         self.staged = [Stage(name='hibernate5',
                              title='Hibernate5 Driver',
                              requirements='Java 8 or 11',
+                             bundle=Bundles.CLIENT,
                              package=self.__PKGNAME),
                        Stage(name='hibernate6',
                              title='Hibernate6 Driver',
                              requirements='Java 11',
+                             bundle=Bundles.CLIENT,
                              package=self.__PKGNAME),
                        Stage(name='hibernate7',
                              title='Hibernate7 Driver',
                              requirements='Java 17',
+                             bundle=Bundles.CLIENT,
                              package=self.__PKGNAME)]
 
         self.stage5 = self.staged[0]
